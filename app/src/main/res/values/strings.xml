@@ -1,0 +1,167 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <string name="app_name">Report Of Power Cut</string>
+    <string name="report_of_power_cut">停电信息报备</string>
+    <string name="choose_line">选择线路：</string>
+    <string name="choose_switch">选择开关：</string>
+    <string-array name="lines">
+        <item>111新兴线</item>
+        <item>114东川线</item>
+        <item>115宜兴线</item>
+        <item>116立地线</item>
+        <item>117漆河线</item>
+        <item>118农二线</item>
+        <item>120王家河线</item>
+        <item>121农一线</item>
+        <item>134陈陶线</item>
+        <item>167东农线</item>
+        <item>168黑池线</item>
+        <item>191李家沟</item>
+        <item>193北农线</item>
+        <item>194西农线</item>
+        <item>195河东沟线</item>
+        <item>196王贬线</item>
+        <item>199净水II线</item>
+        <item>197纺织厂线</item>
+    </string-array>
+
+    <string-array name="switch_of_111" tools:ignore="DuplicateDefinition">
+        <item>111新兴线#06-#07杆开关</item>
+        <item>111新兴线#34杆开关</item>
+        <item>111新兴线新兴支线#8杆开关</item>
+        <item>111新兴线#44杆开关</item>
+        <item>111新兴线马科支线#01杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_114" tools:ignore="DuplicateDefinition">
+        <item>114东川线#2杆开关</item>
+        <item>114东川线#25-#26杆开关</item>
+        <item>114东川线上店支线#1杆开关</item>
+        <item>114东川线上店支线#55杆开关</item>
+        <item>114东川线林场支线#5杆开关</item>
+        <item>114东川线张家村支线#2杆开关</item>
+        <item>114东川线#59-#60杆开关</item>
+        <item>114东川线黄古寨支线#1杆开关</item>
+        <item>114东川线祁家沟支线#1杆开关</item>
+        <item>114东川线#94杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_115" tools:ignore="DuplicateDefinition">
+        <item>115宜兴线#05杆开关</item>
+        <item>115宜兴线#23杆开关</item>
+        <item>115宜兴线#55杆开关</item>
+        <item>115宜兴线#69杆开关T接公园支线</item>
+        <item>115宜兴线#90-#91杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_116" tools:ignore="DuplicateDefinition">
+        <item>116立地线#2杆开关</item>
+        <item>116立地线#12杆开关</item>
+        <item>116立地线双碑六队支线#1杆开关</item>
+        <item>116立地线#31-#32杆开关</item>
+        <item>116立地线#48杆开关</item>
+        <item>116立地线罗寨支线#1杆开关</item>
+        <item>116立地线#59杆开关</item>
+        <item>116立地线#92杆开关</item>
+
+    </string-array>
+
+    <string-array name="switch_of_117" tools:ignore="DuplicateDefinition">
+        <item>#5-#6杆开关</item>
+        <item>王家河新村支线#2杆开关</item>
+        <item>神湫分支线#1杆开关</item>
+        <item>松岭分支线#5杆开关</item>
+        <item>117漆河线#71杆开关</item>
+        <item>范村支线#1杆开关</item>
+        <item>范村支线#12杆开关</item>
+        <item>范村支线#49杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_118" tools:ignore="DuplicateDefinition">
+        <item>118农二线#3杆开关</item>
+        <item>118农二线#25-#26杆开关</item>
+        <item>演池支线#1杆开关</item>
+        <item>南头分支线#5-#6杆开关</item>
+        <item>演池支线#33杆开关</item>
+        <item>演池支线#56杆开关</item>
+        <item>演池支线#99杆开关</item>
+        <item>南头分支线#34-#35杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_120" tools:ignore="DuplicateDefinition">
+        <item>120王家河线#5-#6杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_121" tools:ignore="DuplicateDefinition">
+        <item>121农一线#5-#6杆开关</item>
+        <item>121农一线#15-#16杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_134" tools:ignore="DuplicateDefinition">
+        <item>134陈陶线#14-#15杆开关</item>
+
+    </string-array>
+
+    <string-array name="switch_of_167" tools:ignore="DuplicateDefinition">
+        <item>167东农线#6-#7杆开关</item>
+        <item>167东农线#58-#59杆开关</item>
+        <item>167东农线#91杆开关</item>
+        <item>167东农线豁口支线#4杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_168" tools:ignore="DuplicateDefinition">
+        <item>168黑池线#2杆开关</item>
+        <item>168黑池线#21-#22杆开关</item>
+        <item>168黑池线#58-#59杆开关</item>
+        <item>168黑池线#88-#89杆开关</item>
+        <item>168黑池线河里队支线#14杆丝具</item>
+        <item>168黑池线杜家塬支线#3杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_196" tools:ignore="DuplicateDefinition">
+        <item>196王贬线#8-#9杆开关</item>
+        <item>196王贬线#31杆开关</item>
+        <item>196王贬线#48杆开关</item>
+        <item>196王贬线#小园支线#3杆开关</item>
+        <item>196王贬线#小园支线#54-#55杆开关</item>
+        <item>196王贬线#小园支线#83杆开关</item>
+        <item>196王贬线#小园支线#106杆开关</item>
+        <item>196王贬线凤凰支线#5-#6杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_193" tools:ignore="DuplicateDefinition">
+        <item>193北农线#3杆开关</item>
+        <item>193北农线#13-#14杆开关</item>
+        <item>193北农线石坡支线#1杆开关</item>
+        <item>193北农线石坡支线#19杆开关</item>
+        <item>193北农线#36杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_194" tools:ignore="DuplicateDefinition">
+        <item>194西农线#5杆开关</item>
+        <item>194西农线#28杆开关</item>
+        <item>194西农线#47杆开关</item>
+        <item>194西农线凤凰新城支线#1杆开关</item>
+        <item>194西农线#1—28#杆</item>
+        <item>194西农线石凹队#1杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_195" tools:ignore="DuplicateDefinition">
+        <item>195河东沟线#3杆开关</item>
+        <item>195河东沟线#10杆开关</item>
+        <item>195河东沟线#10杆开关以后西农28#杆以后线路</item>
+    </string-array>
+
+    <string-array name="switch_of_191" tools:ignore="DuplicateDefinition">
+        <item>191李家沟线#11-#12杆开关</item>
+        <item>191李家沟线李家沟一队二台区支线#1杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_199" tools:ignore="DuplicateDefinition">
+        <item>199净水II线#2杆开关</item>
+    </string-array>
+
+    <string-array name="switch_of_197" tools:ignore="DuplicateDefinition">
+        <item>197纺织厂线#2杆开关</item>
+    </string-array>
+
+</resources>
