@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -13,8 +14,12 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
 public class MainActivity extends AppCompatActivity {
 
+    public String line,switchOfLine;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,17 +28,20 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinnerOfLine = findViewById(R.id.line);
         Spinner spinnerOfswtich = findViewById(R.id.switch_of_line);
         Button button = findViewById(R.id.report_bt);
+        Button taiquButton = findViewById(R.id.taiqu);
 
         button.setOnClickListener(new View.OnClickListener(){
-
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this,"线路："+spinnerOfLine.getSelectedItem().toString()
                         +"。开关："+spinnerOfswtich.getSelectedItem().toString(),Toast.LENGTH_LONG).show();
 
+                Intent intent = getIntent();
+                String[] strs = intent.getExtras().getStringArray("taiquArray");
+                String str = Arrays.toString(strs);
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
                 ClipData mClipData = ClipData.newPlainText("lable", "线路："+spinnerOfLine.getSelectedItem().toString()
-                        +"。开关："+spinnerOfswtich.getSelectedItem().toString());
+                        +"。开关："+spinnerOfswtich.getSelectedItem().toString()+"台区："+str);
                 cm.setPrimaryClip(mClipData);
             }
         });
@@ -44,8 +52,8 @@ public class MainActivity extends AppCompatActivity {
         spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_LONG).show();
-
+                //Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
+                line = spinnerOfLine.getSelectedItem().toString();
                 if ("111新兴线".equals(spinnerOfLine.getSelectedItem().toString())) {
                     ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_111, android.R.layout.simple_spinner_item);
                     adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -162,16 +170,26 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
         spinnerOfswtich.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                Toast.makeText(MainActivity.this, "选择开关：" + spinnerOfswtich.getSelectedItem().toString(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, "选择开关：" + spinnerOfswtich.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
+                switchOfLine = spinnerOfswtich.getSelectedItem().toString();
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
+            }
+        });
+
+        taiquButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(MainActivity.this,TaiQuMainActivity.class);
+                intent.putExtra("line",line);
+                intent.putExtra("switch",switchOfLine);
+                startActivity(intent);
             }
         });
     }
