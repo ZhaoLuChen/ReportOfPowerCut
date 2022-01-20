@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
@@ -25,23 +24,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Spinner spinnerOfLine = findViewById(R.id.line);
-        Spinner spinnerOfswtich = findViewById(R.id.switch_of_line);
-        Button button = findViewById(R.id.report_bt);
-        Button taiquButton = findViewById(R.id.taiqu);
+        Spinner spinnerOfLine = findViewById(R.id.line);/*线路选择菜单*/
+        Spinner spinnerOfswtich = findViewById(R.id.switch_of_line);/*开关选择开关*/
+        Button report_button = findViewById(R.id.report_bt);/*信息生成按键，点击后生成停电信息到粘贴板*/
+        Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
 
-        button.setOnClickListener(new View.OnClickListener(){
+        report_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 Toast.makeText(MainActivity.this,"线路："+spinnerOfLine.getSelectedItem().toString()
                         +"。开关："+spinnerOfswtich.getSelectedItem().toString(),Toast.LENGTH_LONG).show();
 
+                /*获取TaiQuActivity传送的台区信息*/
                 Intent intent = getIntent();
-                String[] strs = intent.getExtras().getStringArray("taiquArray");
-                String str = Arrays.toString(strs);
+                String[] strs = intent.getExtras().getStringArray("taiquArray");/*获得台区数组*/
+                int sum = intent.getIntExtra("num",0);
+                /*将信息复制到粘贴板*/
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData mClipData = ClipData.newPlainText("lable", "线路："+spinnerOfLine.getSelectedItem().toString()
-                        +"。开关："+spinnerOfswtich.getSelectedItem().toString()+"台区："+str);
+                ClipData mClipData = ClipData.newPlainText("lable", "线路："+spinnerOfLine.getSelectedItem().toString()+"\n"+
+                        "开关："+spinnerOfswtich.getSelectedItem().toString()+"\n"+
+                        "共计"+strs.length+"个台区，分别是："+Arrays.toString(strs)+"\n"+"影响低压户数："+sum);
                 cm.setPrimaryClip(mClipData);
             }
         });
@@ -49,7 +51,11 @@ public class MainActivity extends AppCompatActivity {
         ArrayAdapter<CharSequence> adapterOfLine = ArrayAdapter.createFromResource(getApplicationContext(),R.array.lines, android.R.layout.simple_spinner_item);
         adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerOfLine.setAdapter(adapterOfLine);
+
+        /*线路菜单点击监听器，根据所选线路确定开关*/
         spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            /*线路菜单点击监听器，根据所选线路确定开关*/
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
@@ -170,23 +176,24 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+
+        /*开关菜单点击监听器，选择该线路开关*/
         spinnerOfswtich.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(MainActivity.this, "选择开关：" + spinnerOfswtich.getSelectedItem().toString(), Toast.LENGTH_SHORT).show();
                 switchOfLine = spinnerOfswtich.getSelectedItem().toString();
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
             }
         });
 
+        /*台区选择按键监听器，根据所选线路和开关选择台区，点击后跳转TaiQuActivity*/
         taiquButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this,TaiQuMainActivity.class);
+                Intent intent = new Intent(MainActivity.this, TaiQuActivity.class);
                 intent.putExtra("line",line);
                 intent.putExtra("switch",switchOfLine);
                 startActivity(intent);
