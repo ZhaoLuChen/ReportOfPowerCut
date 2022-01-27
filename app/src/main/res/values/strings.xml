@@ -1,27 +1,27 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Report Of Power Cut</string>
-    <string name="report_of_power_cut">停电信息报备</string>
+    <string name="report_of_power_cut">印王电力助手</string>
     <string name="choose_line">选择线路：</string>
     <string name="choose_switch">选择开关：</string>
     <string-array name="lines">
         <item>111新兴线</item>
-        <item>114东川线</item>
-        <item>115宜兴线</item>
-        <item>116立地线</item>
-        <item>117漆河线</item>
-        <item>118农二线</item>
-        <item>120王家河线</item>
-        <item>121农一线</item>
-        <item>134陈陶线</item>
-        <item>167东农线</item>
-        <item>168黑池线</item>
-        <item>191李家沟</item>
-        <item>193北农线</item>
-        <item>194西农线</item>
-        <item>195河东沟线</item>
-        <item>196王贬线</item>
-        <item>199净水II线</item>
-        <item>197纺织厂线</item>
+        <item>114东川线（数据暂未导入）</item>
+        <item>115宜兴线（数据暂未导入）</item>
+        <item>116立地线（数据暂未导入）</item>
+        <item>117漆河线（数据暂未导入）</item>
+        <item>118农二线（数据暂未导入）</item>
+        <item>120王家河线（数据暂未导入）</item>
+        <item>121农一线（数据暂未导入）</item>
+        <item>134陈陶线（数据暂未导入）</item>
+        <item>167东农线（数据暂未导入）</item>
+        <item>168黑池线（数据暂未导入）</item>
+        <item>191李家沟（数据暂未导入）</item>
+        <item>193北农线（数据暂未导入）</item>
+        <item>194西农线（数据暂未导入）</item>
+        <item>195河东沟线（数据暂未导入）</item>
+        <item>196王贬线（数据暂未导入）</item>
+        <item>199净水II线（数据暂未导入）</item>
+        <item>197纺织厂线（数据暂未导入）</item>
     </string-array>
 
     <string-array name="switch_of_111" tools:ignore="DuplicateDefinition">

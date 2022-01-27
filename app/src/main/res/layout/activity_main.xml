@@ -83,6 +83,28 @@
                 android:textSize="15sp" />
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="请输入停电时间："
+                android:textSize="22sp"
+                android:textColor="@color/black"/>
+
+            <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/time_cut"
+                android:hint="(单位：小时)"
+                android:textColorHint="#95A1AA"
+                android:inputType="number"/>
+        </LinearLayout>
+
         <Button
             android:id="@+id/report_bt"
             android:layout_width="match_parent"
@@ -91,6 +113,13 @@
             android:text="生成停电报备信息"
             android:textSize="25sp" />
 
+        <Button
+            android:id="@+id/load_bt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="载入数据"
+            android:textSize="25sp" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

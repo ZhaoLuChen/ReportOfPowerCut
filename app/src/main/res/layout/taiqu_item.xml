@@ -6,18 +6,15 @@
     <TextView
         android:id="@+id/taiqu_name"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textStyle="bold"/>
 
     <TextView
         android:id="@+id/taiqu_num"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <CheckBox
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/taiqu_check"
-        android:checked="true"/>
-
+        android:textSize="12sp"
+        android:paddingLeft="20dp"/>
 
 </LinearLayout>
