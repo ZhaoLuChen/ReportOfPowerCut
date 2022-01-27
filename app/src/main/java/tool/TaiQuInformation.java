@@ -98,9 +98,7 @@ public class TaiQuInformation {
                 taiQuArray= new String[]{"四河沟二台区","四河沟组","椿树沟组","潘家河光伏","潘家河村",
                         "艾家庄","码子组"};
             }
-
         }
-
     }
 
     public int sumOfNum(int[] nums){
