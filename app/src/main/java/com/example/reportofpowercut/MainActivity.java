@@ -34,19 +34,21 @@ import tool.TaiQuInformation;
 public class MainActivity extends AppCompatActivity {
 
     private String line,switchOfLine;
-    private String[] strs;
+    private String[] strs,lines,switchs;
     private int sum,num;
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private StringBuffer report = new StringBuffer();
-    private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";
+    private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
     int time = 0;
 
+    //读写权限
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
+    //申请读写权限以及存储管理权限（Android 11开始要读写文件必须申请存储管理权限）
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity,
@@ -64,13 +66,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //判断SDK版本是否是Android 11以后，是的话申请存储管理权限
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
             if (!Environment.isExternalStorageManager()){
                 Intent intent = new Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION);
                 startActivity(intent);
             }
         }
-
         verifyStoragePermissions(MainActivity.this);
 
         Spinner spinnerOfLine = findViewById(R.id.line);/*线路选择菜单*/
@@ -80,19 +82,61 @@ public class MainActivity extends AppCompatActivity {
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
         Button loadButton = findViewById(R.id.load_bt);/*载入台区数据表格*/
 
+        //读取台区数据表格，获取表格中的线路
+        File excelFile = new File(filepath);
+
+        lines = PoiUtil.getLinesFromExcel(excelFile);
+        ArrayAdapter<String> adapterOfLine = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,lines);
+        adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerOfLine.setAdapter(adapterOfLine);
+
+        /*线路菜单点击监听器，根据所选线路确定开关*/
+        spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                //Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
+                line = spinnerOfLine.getSelectedItem().toString();
+                switchs = PoiUtil.getSwitchsFormExcel(excelFile,line);
+                ArrayAdapter<String> adapterOfSwitch = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,switchs);
+                adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinnerOfswtich.setAdapter(adapterOfSwitch);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        /*开关菜单点击监听器，选择该线路开关*/
+        spinnerOfswtich.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                System.out.println("进入开关菜单");
+                switchOfLine = spinnerOfswtich.getSelectedItem().toString();
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        //数据载入按键监听器
         loadButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 File file = new File(filepath);
                 if (file.exists()){
                     System.out.println("找到文件");
-                    System.out.println(PoiUtil.readExcel(file));
+                    File excelFile = new File(filepath);
+                    lines = PoiUtil.getLinesFromExcel(excelFile);
                 }else{
                     System.out.println("没有找到文件");
                 }
             }
         });
 
+        //信息生成按键监听器
         report_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
@@ -106,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                 /*获取TaiQuActivity传送的台区信息*/
                 Intent intent = getIntent();
                 Bundle bundle = intent.getExtras();
+                //判断是否从台区选择界面跳转过来的
                 if (bundle == null){
                     TaiQuInformation taiQuInformation = new TaiQuInformation(line,switchOfLine);
                     strs = taiQuInformation.taiQuArray;
@@ -147,147 +192,6 @@ public class MainActivity extends AppCompatActivity {
                         .create();
 
                 alert.show();
-            }
-        });
-
-        ArrayAdapter<CharSequence> adapterOfLine = ArrayAdapter.createFromResource(getApplicationContext(),R.array.lines, android.R.layout.simple_spinner_item);
-        adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerOfLine.setAdapter(adapterOfLine);
-
-        /*线路菜单点击监听器，根据所选线路确定开关*/
-        spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-
-            /*线路菜单点击监听器，根据所选线路确定开关*/
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
-                line = spinnerOfLine.getSelectedItem().toString();
-                if ("111新兴线".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_111, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("114东川线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_114, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("115宜兴线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_115, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("116立地线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_116, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("117漆河线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_117, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("118农二线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_118, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("120王家河线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_120, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("121农一线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_121, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("134陈陶线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_134, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("167东农线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_167, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("168黑池线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_168, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("191李家沟（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_191, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("193北农线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_193, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("194西农线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_194, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("195河东沟线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_195, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("196王贬线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_196, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("199净水II线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_199, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-                if ("197纺织厂线（数据暂未导入）".equals(spinnerOfLine.getSelectedItem().toString())) {
-                    ArrayAdapter<CharSequence> adapterOfSwitch = ArrayAdapter.createFromResource(getApplicationContext(), R.array.switch_of_197, android.R.layout.simple_spinner_item);
-                    adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    spinnerOfswtich.setAdapter(adapterOfSwitch);
-                }
-
-
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        /*开关菜单点击监听器，选择该线路开关*/
-        spinnerOfswtich.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                switchOfLine = spinnerOfswtich.getSelectedItem().toString();
-            }
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
             }
         });
 

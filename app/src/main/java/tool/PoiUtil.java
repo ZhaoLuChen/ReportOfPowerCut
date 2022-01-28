@@ -10,10 +10,12 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,12 +26,66 @@ import java.util.List;
  * @author lxl
  */
 public class PoiUtil {
+    public static Workbook getWorkBook(File file){
+        Workbook workbook = null;
+        try {
+            FileInputStream fileInputStream = new FileInputStream(file);
+            if (file.getName().endsWith("xls")){
+                workbook = new HSSFWorkbook(fileInputStream);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return workbook;
+    }
 
-    public static String readExcel(File file) {
+    public static String[] getLinesFromExcel(File file) {
+       String[] lines;
+       Workbook workbook =getWorkBook(file);
+       System.out.println();
+        //获取表格的每一页（线路）
+        lines = new String[workbook.getNumberOfSheets()];
+        for (int i = 0;i<workbook.getNumberOfSheets();i++){
+            lines[i] = workbook.getSheetAt(i).getSheetName();
+            System.out.println("得到线路："+lines[i]);
+        }
+        return lines;
+    }
 
+    public static String[] getSwitchsFormExcel(File file,String line){
+        Workbook workbook =getWorkBook(file);
+        Sheet sheet = workbook.getSheet(line);
+        String[] switchs = new String[sheet.getNumMergedRegions()-2];
+        for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
+            CellRangeAddress region = sheet.getMergedRegion(i);
+            int colIndex = region.getFirstColumn(); // 合并区域首列位置
+            int rowNum = region.getFirstRow(); // 合并区域首行位置
+            System.out.println("第[" + i + "]个合并区域：" + sheet.getRow(rowNum).getCell(colIndex).getStringCellValue());
+            switchs[i-2] = sheet.getRow(rowNum).getCell(colIndex).getStringCellValue();
+        }
+        return switchs;
+    }
+
+    public static String[] getTaiQuFromExcel(File file,String line,String switchOfLine){
+        Workbook workbook =getWorkBook(file);
+        Sheet sheet = workbook.getSheet(line);
+        for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
+            CellRangeAddress region = sheet.getMergedRegion(i);
+            int colIndex = 4; // 台区列位置
+            int rowFirstNum = region.getFirstRow(); // 合并区域首行位置
+            int rowLastNum = region.getLastRow(); // 合并区域末行位置
+            System.out.println("第[" + i + "]个合并区域：" + sheet.getRow(rowNum).getCell(colIndex).getStringCellValue());
+            switchs[i-2] = sheet.getRow(rowNum).getCell(colIndex).getStringCellValue();
+        }
+    }
+
+        public static ArrayList readExcel(File file) {
+        String[] lines;
         InputStream fis;
         int width,height;
         ArrayList<TaiQuModel> taiQuModelArrayList = new ArrayList<>();
+
+        //对文件进行读操作
         try {
             fis = new FileInputStream(file);
             Workbook wk;
@@ -58,7 +114,7 @@ public class PoiUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return "finish";
+        return taiQuModelArrayList;
     }
 
     public static String write2Excel(String filePath, ExcelView.TableValueModel model) {
