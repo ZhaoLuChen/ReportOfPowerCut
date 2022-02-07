@@ -15,11 +15,12 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import tool.TaiQuInformation;
+import tool.PoiUtil;
 import tool.TaiQuModel;
 import tool.TaiQuadapter;
 
@@ -30,11 +31,12 @@ public class TaiQuActivity extends AppCompatActivity {
     public int sum;
     public int num;
     public int[] nums;
-    public TaiQuInformation taiQuInformation;//台区信息类
     public List<TaiQuModel> taiQuModelList = new ArrayList<>();
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
-    private  StringBuffer cancel = new StringBuffer();;
+    private  StringBuffer cancel = new StringBuffer();
+    private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
+    File excelFile = new File(filepath);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,27 +61,28 @@ public class TaiQuActivity extends AppCompatActivity {
         /*通过TextView显示MainActivity传送来的线路与开关*/
         line_switch.setText(new StringBuilder().append("当前线路：").append(line).append("\n").append("当前开关：").append(switchOfLine).toString());
 
-        /*根据所选的线路与开关显示相应台区*/
-        TaiQuInformation taiQuInformation = new TaiQuInformation(line,switchOfLine);
-
-        /*初始化台区信息*/
-        initTaiQu(taiQuInformation);
+        /*根据所选的线路与开关获取相应台区*/
+        taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
+        newTaiQuArray = new String[taiQuModelList.size()];
+        nums = new int[taiQuModelList.size()];
+        num = taiQuModelList.size();
+        for (int i = 0;i<taiQuModelList.size();i++){
+            newTaiQuArray[i] = taiQuModelList.get(i).getTaiqu();
+            nums[i] = taiQuModelList.get(i).getNum();
+        }
 
         /*生成数组适配器，作为listview和台区数据的桥梁*/
         TaiQuadapter adapter = new TaiQuadapter(TaiQuActivity.this, R.layout.taiqu_item, taiQuModelList);
         this.taiQuList.setAdapter(adapter);
 
-        /*获取台区数目*/
-        num = taiQuInformation.nums.length;
-
         /*设置台区列表子项点击监听器*/
         taiQuList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuInformation.taiQuArray[position]+position,Toast.LENGTH_SHORT).show();
+                Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
 
                 num--; /*每点击一次，台区数量num就减一*/
-                cancel.append(taiQuInformation.taiQuArray[position]).append("\n");/*将取消的台区名称添加到字符串cancel中*/
+                cancel.append(taiQuModelList.get(position).getTaiqu()).append("\n");/*将取消的台区名称添加到字符串cancel中*/
                 System.out.println(position);
                 /*获取被点击的子项的TextView，为其字符后缀加上"（已取消）"，并将字体颜色设置为红色*/
                 View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
@@ -127,18 +130,5 @@ public class TaiQuActivity extends AppCompatActivity {
                 alert.show();
             }
         });
-    }
-
-    /*初始化台区信息，通过taiQuInformation类获取线路开关及台区信息，生成所有台区类taiQuModel，并添加到台区类列表中*/
-    private void initTaiQu(TaiQuInformation taiQuInformation){
-        newTaiQuArray = taiQuInformation.taiQuArray;
-        sum = taiQuInformation.sumOfNum(taiQuInformation.nums);
-        nums = taiQuInformation.nums;
-
-        for (int i = 0;i<taiQuInformation.taiQuArray.length;i++){
-            TaiQuModel taiQuModel = new TaiQuModel(taiQuInformation.line,taiQuInformation.switchOfLine,taiQuInformation.taiQuArray[i],taiQuInformation.nums[i]);
-            taiQuModelList.add(taiQuModel);
-            System.out.println(taiQuModelList.get(i).getTaiqu());
-        }
     }
 }

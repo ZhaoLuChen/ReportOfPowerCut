@@ -66,29 +66,28 @@ public class PoiUtil {
         return switchs;
     }
 
-    public static TaiQuModel[] getTaiQuFromExcel(File file,String line,String switchOfLine){
+    public static List<TaiQuModel> getTaiQuFromExcel(File file,String line,String switchOfLine){
         Workbook workbook =getWorkBook(file);
         Sheet sheet = workbook.getSheet(line);
-        TaiQuModel[] taiQuModels = new TaiQuModel[0];
         String station = sheet.getRow(1).getCell(2).getStringCellValue();
+        List<TaiQuModel> taiQuModelList = new ArrayList<>();
         for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
             CellRangeAddress region = sheet.getMergedRegion(i);
             int colIndex = region.getFirstColumn(); // 合并区域首列位置
             int firstRowNum = region.getFirstRow(); // 合并区域首行位置
             int lastRowNum = region.getLastRow();
-            taiQuModels = new TaiQuModel[lastRowNum-firstRowNum+1];
             if(switchOfLine.equals(sheet.getRow(firstRowNum).getCell(colIndex).getStringCellValue())){
-                System.out.println("台区数量："+taiQuModels.length);
+                System.out.println("台区数量："+(lastRowNum-firstRowNum+1));
                 for(int j = 0;j<=(lastRowNum-firstRowNum);j++){
                     TaiQuModel taiQuModel = new TaiQuModel(station,line,switchOfLine,
                             sheet.getRow(firstRowNum+j).getCell(colIndex+1).getStringCellValue(),
                             (int)sheet.getRow(firstRowNum+j).getCell(colIndex+2).getNumericCellValue());
-                    taiQuModels[j] = taiQuModel;
-                    System.out.println("台区名称："+taiQuModels[j]);
+                    taiQuModelList.add(taiQuModel);
+                    System.out.println("台区名称："+taiQuModelList.get(j));
                 }
             };
         }
-        return taiQuModels;
+        return taiQuModelList;
     }
 
         public static ArrayList readExcel(File file) {
