@@ -114,6 +114,7 @@ public class MainActivity extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 System.out.println("进入开关菜单");
                 switchOfLine = spinnerOfswtich.getSelectedItem().toString();
+                PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
