@@ -105,6 +105,37 @@
                 android:inputType="number"/>
         </LinearLayout>
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginVertical="5dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="故障线路及开关："
+                android:textSize="15sp"
+                android:id="@+id/choosed_line_switch"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="停电台区数："
+                android:id="@+id/choosed_num"
+                android:textSize="15sp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="影响低压户数："
+                android:id="@+id/choosed_sum"
+                android:textSize="15sp"
+                android:textColor="@color/black"/>
+        </LinearLayout>
+
         <Button
             android:id="@+id/report_bt"
             android:layout_width="match_parent"

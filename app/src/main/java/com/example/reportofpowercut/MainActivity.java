@@ -19,6 +19,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -81,6 +82,9 @@ public class MainActivity extends AppCompatActivity {
         Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
         Button loadButton = findViewById(R.id.load_bt);/*载入台区数据表格*/
+        TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);
+        TextView choosedNum = findViewById(R.id.choosed_num);
+        TextView choosedSum = findViewById(R.id.choosed_sum);
 
         //读取台区数据表格，获取表格中的线路
         File excelFile = new File(filepath);
@@ -166,10 +170,14 @@ public class MainActivity extends AppCompatActivity {
                     line = bundle.getString("line",line);
                     switchOfLine = bundle.getString("switchOfLine",switchOfLine);
                 }
+                choosedLineSwitch.append(line+"，");
+                choosedLineSwitch.append(switchOfLine);
+                choosedNum.append(num+"");
+                choosedSum.append(sum+"");
 
                 /*生成停电报备的文字信息*/
-                report.append("线路：").append(line).append("\n").append("开关：").append(switchOfLine).append("\n")
-                        .append("共计").append(num).append("个台区，分别是：").append(Arrays.toString(strs)).append("\n").append("影响低压户数：")
+                report.append("坐席您好，印台王益区供电公司").append(line).append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).append("\n")
+                        .append("停电范围共计").append(num).append("个台区，分别是：").append(Arrays.toString(strs)).append("\n").append("影响低压户数：")
                         .append(sum).append("\n").append("停电时户数：").append(num*time).append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
 
                 /*生成一个对话框显示生成停电报备的信息*/
