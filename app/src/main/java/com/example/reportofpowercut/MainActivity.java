@@ -40,25 +40,20 @@ public class MainActivity extends AppCompatActivity {
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private StringBuffer report = new StringBuffer();
-    private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
+    private final String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
     int time = 0;
 
     //读写权限
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static final String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE};
+    private static final String[] PERMISSIONS_STORAGE = {Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
     //申请读写权限以及存储管理权限（Android 11开始要读写文件必须申请存储管理权限）
     public static void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
-        int permission = ActivityCompat.checkSelfPermission(activity,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
+        int permission = ActivityCompat.checkSelfPermission(activity,Manifest.permission.READ_EXTERNAL_STORAGE);
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
-            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE,
-                    REQUEST_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }
     }
 
@@ -88,8 +83,10 @@ public class MainActivity extends AppCompatActivity {
 
         //读取台区数据表格，获取表格中的线路
         File excelFile = new File(filepath);
-
-        lines = PoiUtil.getLinesFromExcel(excelFile);
+        if(excelFile.exists()){
+            System.out.println("找到文件");
+            lines = PoiUtil.getLinesFromExcel(excelFile);
+        }
         ArrayAdapter<String> adapterOfLine = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,lines);
         adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerOfLine.setAdapter(adapterOfLine);

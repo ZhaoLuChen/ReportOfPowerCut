@@ -12,6 +12,7 @@
         android:label="@string/report_of_power_cut"
         android:roundIcon="@drawable/states_power"
         android:supportsRtl="true"
+        android:requestLegacyExternalStorage="true"
 
         android:theme="@style/Theme.ReportOfPowerCut">
         <activity

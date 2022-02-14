@@ -41,8 +41,7 @@ public class PoiUtil {
 
     public static String[] getLinesFromExcel(File file) {
        String[] lines;
-       Workbook workbook =getWorkBook(file);
-       System.out.println();
+       Workbook workbook = getWorkBook(file);
         //获取表格的每一页（线路）
         lines = new String[workbook.getNumberOfSheets()];
         for (int i = 0;i<workbook.getNumberOfSheets();i++){
