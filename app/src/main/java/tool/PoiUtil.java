@@ -54,13 +54,19 @@ public class PoiUtil {
     public static String[] getSwitchsFormExcel(File file,String line){
         Workbook workbook =getWorkBook(file);
         Sheet sheet = workbook.getSheet(line);
-        String[] switchs = new String[sheet.getNumMergedRegions()-2];
-        for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
-            CellRangeAddress region = sheet.getMergedRegion(i);
-            int colIndex = region.getFirstColumn(); // 合并区域首列位置
-            int rowNum = region.getFirstRow(); // 合并区域首行位置
-            System.out.println("第[" + i + "]个合并区域：" + sheet.getRow(rowNum).getCell(colIndex).getStringCellValue());
-            switchs[i-2] = sheet.getRow(rowNum).getCell(colIndex).getStringCellValue();
+        String[] switchs;
+        //先判断是否有合并区域，也就是是否有至少一个开关、台区
+        if(sheet.getNumMergedRegions()!=0){ //有至少一个合并区域
+            switchs = new String[sheet.getNumMergedRegions()-2];
+            for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
+                CellRangeAddress region = sheet.getMergedRegion(i);
+                int colIndex = region.getFirstColumn(); // 合并区域首列位置
+                int rowNum = region.getFirstRow(); // 合并区域首行位置
+                System.out.println("第[" + i + "]个合并区域：" + sheet.getRow(rowNum).getCell(colIndex).getStringCellValue());
+                switchs[i-2] = sheet.getRow(rowNum).getCell(colIndex).getStringCellValue();
+            }
+        }else { //没有合并区域，说明该线路只有一个开关和台区
+            switchs = new String[]{sheet.getRow(1).getCell(2).toString()};
         }
         return switchs;
     }
@@ -68,23 +74,32 @@ public class PoiUtil {
     public static List<TaiQuModel> getTaiQuFromExcel(File file,String line,String switchOfLine){
         Workbook workbook =getWorkBook(file);
         Sheet sheet = workbook.getSheet(line);
-        String station = sheet.getRow(1).getCell(2).getStringCellValue();
         List<TaiQuModel> taiQuModelList = new ArrayList<>();
-        for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
-            CellRangeAddress region = sheet.getMergedRegion(i);
-            int colIndex = region.getFirstColumn(); // 合并区域首列位置
-            int firstRowNum = region.getFirstRow(); // 合并区域首行位置
-            int lastRowNum = region.getLastRow();
-            if(switchOfLine.equals(sheet.getRow(firstRowNum).getCell(colIndex).getStringCellValue())){
-                System.out.println("台区数量："+(lastRowNum-firstRowNum+1));
-                for(int j = 0;j<=(lastRowNum-firstRowNum);j++){
-                    TaiQuModel taiQuModel = new TaiQuModel(station,line,switchOfLine,
-                            sheet.getRow(firstRowNum+j).getCell(colIndex+1).getStringCellValue(),
-                            (int)sheet.getRow(firstRowNum+j).getCell(colIndex+2).getNumericCellValue());
-                    taiQuModelList.add(taiQuModel);
-                    System.out.println("台区名称："+taiQuModelList.get(j));
-                }
-            };
+
+        //先判断是否有合并区域，也就是是否有至少一个开关、台区
+        if(sheet.getNumMergedRegions()!=0){//有至少一个合并区域
+            String station = sheet.getRow(1).getCell(2).getStringCellValue();
+            for (int i = 2; i < sheet.getNumMergedRegions(); i++) {
+                CellRangeAddress region = sheet.getMergedRegion(i);
+                int colIndex = region.getFirstColumn(); // 合并区域首列位置
+                int firstRowNum = region.getFirstRow(); // 合并区域首行位置
+                int lastRowNum = region.getLastRow();
+                if(switchOfLine.equals(sheet.getRow(firstRowNum).getCell(colIndex).getStringCellValue())){
+                    System.out.println("台区数量："+(lastRowNum-firstRowNum+1));
+                    for(int j = 0;j<=(lastRowNum-firstRowNum);j++){
+                        TaiQuModel taiQuModel = new TaiQuModel(station,line,switchOfLine,
+                                sheet.getRow(firstRowNum+j).getCell(colIndex+1).getStringCellValue(),
+                                (int)sheet.getRow(firstRowNum+j).getCell(colIndex+2).getNumericCellValue());
+                        taiQuModelList.add(taiQuModel);
+                        System.out.println("台区名称："+taiQuModelList.get(j));
+                    }
+                };
+            }
+        }else{//没有合并区域，说明该线路只有一个开关和台区
+            String station = sheet.getRow(1).getCell(2).getStringCellValue();
+            TaiQuModel taiQuModel = new TaiQuModel(station,line,switchOfLine,sheet.getRow(1).getCell(3).toString(),
+                    (int)sheet.getRow(1).getCell(4).getNumericCellValue());
+            taiQuModelList.add(taiQuModel);
         }
         return taiQuModelList;
     }

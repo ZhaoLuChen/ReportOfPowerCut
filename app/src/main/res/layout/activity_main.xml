@@ -78,7 +78,7 @@
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
                 android:textColor="@color/black"
-                android:text="默认全选该开关下所有台区"
+                android:text="点击进入台区选择界面"
                 android:id="@+id/taiqu"
                 android:textSize="15sp" />
         </LinearLayout>

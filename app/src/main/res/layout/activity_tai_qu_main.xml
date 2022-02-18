@@ -43,7 +43,7 @@
 
             <ListView
                 android:layout_width="match_parent"
-                android:layout_height="500dp"
+                android:layout_height="400dp"
                 android:layout_marginHorizontal="10dp"
                 android:layout_marginVertical="10dp"
                 android:id="@+id/taiqu_list"/>

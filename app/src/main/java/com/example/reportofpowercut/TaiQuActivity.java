@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
@@ -28,15 +29,27 @@ public class TaiQuActivity extends AppCompatActivity {
     public String line,switchOfLine;
     public ListView taiQuList;//台区列表
     public String[] newTaiQuArray;//台区数组
-    public int sum;
-    public int num;
-    public int[] nums;
+    public int sum;//低压户数总和
+    public int num;//台区总数
+    public int[] nums;//低压户数数组
     public List<TaiQuModel> taiQuModelList = new ArrayList<>();
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private  StringBuffer cancel = new StringBuffer();
     private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
     File excelFile = new File(filepath);
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        //屏蔽返回键
+        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
+            //do something.
+            return true;
+        } else {
+            return super.dispatchKeyEvent(event);
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +74,7 @@ public class TaiQuActivity extends AppCompatActivity {
         /*通过TextView显示MainActivity传送来的线路与开关*/
         line_switch.setText(new StringBuilder().append("当前线路：").append(line).append("\n").append("当前开关：").append(switchOfLine).toString());
 
-        /*根据所选的线路与开关获取相应台区*/
+        /*根据所选的线路与开关获取相应台区信息*/
         taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
         newTaiQuArray = new String[taiQuModelList.size()];
         nums = new int[taiQuModelList.size()];
@@ -69,6 +82,7 @@ public class TaiQuActivity extends AppCompatActivity {
         for (int i = 0;i<taiQuModelList.size();i++){
             newTaiQuArray[i] = taiQuModelList.get(i).getTaiqu();
             nums[i] = taiQuModelList.get(i).getNum();
+            System.out.println("低压户数"+nums[i]);
         }
 
         /*生成数组适配器，作为listview和台区数据的桥梁*/
@@ -89,11 +103,8 @@ public class TaiQuActivity extends AppCompatActivity {
                 TextView TaiQutext = view1.findViewById(R.id.taiqu_name);
                 TaiQutext.append("（已取消）");
                 TaiQutext.setTextColor(Color.rgb(255,0,0));
-
                 newTaiQuArray[position] = "";/*将被点击的台区名称置为空""*/
                 nums[position] = 0;/*将被点击的台区的低压户数置为0*/
-                sum = Arrays.stream(nums).sum();/*对低压户数求和*/
-
                 return false;
             }
         });
@@ -114,7 +125,9 @@ public class TaiQuActivity extends AppCompatActivity {
                                 bundle.putString("line",line);
                                 bundle.putString("switchOfLine",switchOfLine);
                                 bundle.putStringArray("taiquArray",newTaiQuArray);
+                                sum = Arrays.stream(nums).sum();/*对低压户数求和*/
                                 bundle.putInt("sum",sum);
+                                System.out.println("低压户数："+sum);
                                 bundle.putInt("num",num);
                                 intent.putExtras(bundle);
                                 startActivity(intent);
