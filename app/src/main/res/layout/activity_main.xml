@@ -17,7 +17,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:text="按要求选择线路与开关可自动生成停电报备信息"
+            android:text="按步骤选择线路与开关可自动生成停电报备信息"
             android:layout_marginVertical="20dp" />
         <LinearLayout
             android:layout_width="match_parent"
@@ -37,7 +37,6 @@
                 android:background="@drawable/underline"
                 android:layout_marginStart="10dp"
                 android:id="@+id/line" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -66,19 +65,21 @@
             android:orientation="horizontal"
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="5dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="选择台区："
-                android:textSize="25sp"
-                android:textColor="@color/black"/>
+                android:text="@string/choose_taiQu"
+                android:textColor="@color/black"
+                android:textSize="25sp" />
 
             <Button
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/white"
                 android:textColor="@color/black"
-                android:text="点击进入台区选择界面"
+                android:layout_marginStart="10dp"
+                android:text="点击选择台区"
                 android:id="@+id/taiqu"
                 android:textSize="15sp" />
         </LinearLayout>
@@ -92,7 +93,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="请输入停电时间："
+                android:text="@string/input_time"
                 android:textSize="22sp"
                 android:textColor="@color/black"/>
 
@@ -149,7 +150,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="载入数据"
+            android:text="载入数据（功能暂未实现）"
             android:textSize="25sp" />
     </LinearLayout>
 

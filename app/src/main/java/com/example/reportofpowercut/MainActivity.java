@@ -37,14 +37,14 @@ import tool.TaiQuModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String line,switchOfLine;
-    private String[] strs,lines,switchs;
-    private int sum,num;
+    private String line,switchOfLine;//所选线路及开关
+    private String[] strs,lines,switchs;//台区数组、线路数组、开关数组
+    private int sum,num;//低压户数、台区数
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
-    private StringBuffer report = new StringBuffer();
-    private final String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
-    int time = 0;
+    private StringBuffer report = new StringBuffer();//停电报备信息的长字符串
+    private final String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据文件路径
+    int time = 0;//停电时间
 
 
     //读写权限
@@ -84,6 +84,8 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         }
+
+        //确认权限是否申请
         verifyStoragePermissions(MainActivity.this);
 
         Spinner spinnerOfLine = findViewById(R.id.line);/*线路选择菜单*/
@@ -92,9 +94,9 @@ public class MainActivity extends AppCompatActivity {
         Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
         Button loadButton = findViewById(R.id.load_bt);/*载入台区数据表格*/
-        TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);
-        TextView choosedNum = findViewById(R.id.choosed_num);
-        TextView choosedSum = findViewById(R.id.choosed_sum);
+        TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);//显示当前被选择的开关
+        TextView choosedNum = findViewById(R.id.choosed_num);//显示当前被选择的台区数
+        TextView choosedSum = findViewById(R.id.choosed_sum);//显示当前被选择的低压户数
 
         //读取台区数据表格，获取表格中的线路
         File excelFile = new File(filepath);
@@ -102,22 +104,27 @@ public class MainActivity extends AppCompatActivity {
             System.out.println("找到文件");
             lines = PoiUtil.getLinesFromExcel(excelFile);
         }
+
+        //设置线路菜单数组适配器
         ArrayAdapter<String> adapterOfLine = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,lines);
         adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //为线路菜单设置适配器
         spinnerOfLine.setAdapter(adapterOfLine);
 
         /*线路菜单点击监听器，根据所选线路确定开关*/
         spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //Toast.makeText(MainActivity.this,"选择线路："+spinnerOfLine.getSelectedItem().toString(),Toast.LENGTH_SHORT).show();
+                //获取被选择的线路
                 line = spinnerOfLine.getSelectedItem().toString();
+                //根据被选择的线路，读取当前线路下的开关
                 switchs = PoiUtil.getSwitchsFormExcel(excelFile,spinnerOfLine.getSelectedItem().toString());
+                //设置开关菜单数组适配器
                 ArrayAdapter<String> adapterOfSwitch = new ArrayAdapter<String>(getApplicationContext(),android.R.layout.simple_spinner_item,switchs);
                 adapterOfSwitch.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                //为开关菜单设置适配器
                 spinnerOfswtich.setAdapter(adapterOfSwitch);
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
 
@@ -128,8 +135,9 @@ public class MainActivity extends AppCompatActivity {
         spinnerOfswtich.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                System.out.println("进入开关菜单");
+                //获取被选择的开关
                 switchOfLine = spinnerOfswtich.getSelectedItem().toString();
+                //根据被选择的开关和线路获取台区
                 PoiUtil.getTaiQuFromExcel(excelFile,spinnerOfLine.getSelectedItem().toString(),
                         spinnerOfswtich.getSelectedItem().toString());
             }
@@ -144,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, TaiQuActivity.class);
+                //向台区选择界面传递被选线路与开关
                 intent.putExtra("line",spinnerOfLine.getSelectedItem().toString());
                 intent.putExtra("switch",spinnerOfswtich.getSelectedItem().toString());
                 startActivity(intent);
@@ -186,11 +195,12 @@ public class MainActivity extends AppCompatActivity {
         report_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                //判断是否输入停电时间
                 if (timeText.getText().toString().equals("")){
                     Toast.makeText(MainActivity.this,"请先输入停电时间",Toast.LENGTH_LONG).show();
                 }else {
                     if (!TextUtils.isEmpty(timeText.getText())){
-                        time = Integer.parseInt(timeText.getText().toString());
+                        time = Integer.parseInt(timeText.getText().toString());//获取停电时间
                     }
 
                     /*获取TaiQuActivity传送的台区信息*/
@@ -215,7 +225,6 @@ public class MainActivity extends AppCompatActivity {
                         num = bundle.getInt("num",0);//获取台区数量
                         line = bundle.getString("line",line);//获取线路
                         switchOfLine = bundle.getString("switchOfLine",switchOfLine);//获取开关
-                        bundle = null;
                     }
 
 

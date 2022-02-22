@@ -38,6 +38,7 @@ public class TaiQuActivity extends AppCompatActivity {
     private  StringBuffer cancel = new StringBuffer();
     private String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据路径
     File excelFile = new File(filepath);
+    ArrayList<Integer> cancal_position = new ArrayList<Integer>();
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -93,19 +94,33 @@ public class TaiQuActivity extends AppCompatActivity {
         taiQuList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
-
-                num--; /*每点击一次，台区数量num就减一*/
-                cancel.append(taiQuModelList.get(position).getTaiqu()).append("\n");/*将取消的台区名称添加到字符串cancel中*/
-                System.out.println(position);
-                /*获取被点击的子项的TextView，为其字符后缀加上"（已取消）"，并将字体颜色设置为红色*/
-                View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
-                TextView TaiQutext = view1.findViewById(R.id.taiqu_name);
-                TaiQutext.append("（已取消）");
-                TaiQutext.setTextColor(Color.rgb(255,0,0));
-                newTaiQuArray[position] = "";/*将被点击的台区名称置为空""*/
-                nums[position] = 0;/*将被点击的台区的低压户数置为0*/
-                return false;
+                //判断该台区是否已被取消
+                if (!cancal_position.contains(position)){//根据位置判断被点击的台区是否已被取消，若未被取消则取消
+                    cancal_position.add(position);
+                    Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
+                    num--; /*每点击一次，台区数量num就减一*/
+                    cancel.append(taiQuModelList.get(position).getTaiqu()).append("\n");/*将取消的台区名称添加到字符串cancel中*/
+                    System.out.println(position);
+                    /*获取被点击的子项的TextView，为其字符后缀加上"（已取消）"，并将字体颜色设置为红色*/
+                    View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
+                    TextView TaiQutext = view1.findViewById(R.id.taiqu_name);
+                    TaiQutext.append("（已取消）");
+                    TaiQutext.setTextColor(Color.rgb(255,0,0));
+                    newTaiQuArray[position] = "";/*将被点击的台区名称置为空""*/
+                    nums[position] = 0;/*将被点击的台区的低压户数置为0*/
+                    return false;
+                }else {//被点击的台区已被取消，再次点击则恢复该台区。
+                    Toast.makeText(TaiQuActivity.this,"恢复台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
+                    num++;
+                    cancel = new StringBuffer(cancel.toString().replace(taiQuModelList.get(position).getTaiqu()+"\n",""));
+                    View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
+                    TextView TaiQutext = view1.findViewById(R.id.taiqu_name);
+                    TaiQutext.setText(taiQuModelList.get(position-taiQuList.getFirstVisiblePosition()).getTaiqu());
+                    TaiQutext.setTextColor(Color.rgb(0,0,0));
+                    newTaiQuArray[position] = taiQuModelList.get(position-taiQuList.getFirstVisiblePosition()).getTaiqu();/*将被点击的台区名称恢复*/
+                    nums[position] = taiQuModelList.get(position-taiQuList.getFirstVisiblePosition()).getNum();/*将被点击的台区的低压户数恢复*/
+                    return false;
+                }
             }
         });
 
@@ -120,6 +135,7 @@ public class TaiQuActivity extends AppCompatActivity {
                             /*点击对话框的确认按键后将线路line，开关switchOfLine，低压户数sum，台区数量num，台区名称newTaiQuArray发送到MainActivity*/
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
+                                newTaiQuArray = updata(newTaiQuArray);//更新被选择的台区数组，将空元素剔除。
                                 Intent intent = new Intent( TaiQuActivity.this,MainActivity.class);
                                 Bundle bundle = new Bundle();
                                 bundle.putString("line",line);
@@ -143,5 +159,18 @@ public class TaiQuActivity extends AppCompatActivity {
                 alert.show();
             }
         });
+    }
+
+    //更新被选择的台区数组，将空元素剔除。
+    private String[] updata(String[] strings){
+        List<String> strList= Arrays.asList(strings);
+        List<String> strListNew=new ArrayList<>();
+        for (int i = 0; i <strList.size(); i++) {
+            if (strList.get(i)!=null&&!strList.get(i).equals("")){
+                strListNew.add(strList.get(i));
+            }
+        }
+        String[] strNewArray = strListNew.toArray(new String[strListNew.size()]);
+        return strNewArray;
     }
 }
