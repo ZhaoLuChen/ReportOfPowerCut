@@ -10,7 +10,6 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AlertDialog;
@@ -95,12 +94,13 @@ public class TaiQuActivity extends AppCompatActivity {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 //判断该台区是否已被取消
+
                 if (!cancal_position.contains(position)){//根据位置判断被点击的台区是否已被取消，若未被取消则取消
                     cancal_position.add(position);
-                    Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(TaiQuActivity.this,"取消选择台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
                     num--; /*每点击一次，台区数量num就减一*/
                     cancel.append(taiQuModelList.get(position).getTaiqu()).append("\n");/*将取消的台区名称添加到字符串cancel中*/
-                    System.out.println(position);
+                    System.out.println("选择："+position);
                     /*获取被点击的子项的TextView，为其字符后缀加上"（已取消）"，并将字体颜色设置为红色*/
                     View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
                     TextView TaiQutext = view1.findViewById(R.id.taiqu_name);
@@ -110,7 +110,9 @@ public class TaiQuActivity extends AppCompatActivity {
                     nums[position] = 0;/*将被点击的台区的低压户数置为0*/
                     return false;
                 }else {//被点击的台区已被取消，再次点击则恢复该台区。
-                    Toast.makeText(TaiQuActivity.this,"恢复台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(TaiQuActivity.this,"恢复台区："+taiQuModelList.get(position).getTaiqu()+position,Toast.LENGTH_SHORT).show();
+                    System.out.println("取消："+position);
+                    cancal_position.remove(cancal_position.indexOf(position));
                     num++;
                     cancel = new StringBuffer(cancel.toString().replace(taiQuModelList.get(position).getTaiqu()+"\n",""));
                     View view1 = taiQuList.getChildAt(position-taiQuList.getFirstVisiblePosition());
