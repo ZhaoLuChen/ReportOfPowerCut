@@ -19,6 +19,37 @@
             android:textSize="16sp"
             android:text="按步骤选择线路与开关可自动生成停电报备信息"
             android:layout_marginVertical="20dp" />
+
+        <RadioGroup
+            android:id="@+id/radioGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/No.1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="营配一班"
+                android:layout_marginHorizontal="15dp"
+                android:checked="true"/>
+
+            <RadioButton
+                android:id="@+id/No.2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:text="营配二班"/>
+
+            <RadioButton
+                android:id="@+id/No.4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="15dp"
+                android:text="营配四班"/>
+        </RadioGroup>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -112,29 +143,33 @@
             android:orientation="vertical"
             android:layout_marginHorizontal="10dp"
             android:layout_marginVertical="5dp">
+
             <TextView
+                android:id="@+id/choosed_line_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
                 android:text="故障线路及开关："
-                android:textSize="15sp"
-                android:id="@+id/choosed_line_switch"
-                android:textColor="@color/black"/>
+                android:textColor="@color/red"
+                android:textSize="20sp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
                 android:text="停电台区数："
                 android:id="@+id/choosed_num"
-                android:textSize="15sp"
-                android:textColor="@color/black"/>
+                android:textSize="20sp"
+                android:textColor="@color/red"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginVertical="5dp"
                 android:text="影响低压户数："
                 android:id="@+id/choosed_sum"
-                android:textSize="15sp"
-                android:textColor="@color/black"/>
+                android:textSize="20sp"
+                android:textColor="@color/red"/>
         </LinearLayout>
 
         <Button
@@ -143,14 +178,6 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="生成停电报备信息"
-            android:textSize="25sp" />
-
-        <Button
-            android:id="@+id/load_bt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:text="载入数据（功能暂未实现）"
             android:textSize="25sp" />
     </LinearLayout>
 

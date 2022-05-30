@@ -46,7 +46,7 @@ public class PoiUtil {
         lines = new String[workbook.getNumberOfSheets()];
         for (int i = 0;i<workbook.getNumberOfSheets();i++){
             lines[i] = workbook.getSheetAt(i).getSheetName();
-            System.out.println("得到线路："+lines[i]);
+            //System.out.println("得到线路："+lines[i]);
         }
         return lines;
     }
@@ -91,7 +91,7 @@ public class PoiUtil {
                                 sheet.getRow(firstRowNum+j).getCell(colIndex+1).getStringCellValue(),
                                 (int)sheet.getRow(firstRowNum+j).getCell(colIndex+2).getNumericCellValue());
                         taiQuModelList.add(taiQuModel);
-                        System.out.println("台区名称："+taiQuModelList.get(j));
+                        //System.out.println("台区名称："+taiQuModelList.get(j));
                     }
                 };
             }

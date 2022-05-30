@@ -19,6 +19,8 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,14 +39,16 @@ import tool.TaiQuModel;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String team = "no.1";
     private String line,switchOfLine;//所选线路及开关
     private String[] strs,lines,switchs;//台区数组、线路数组、开关数组
     private int sum,num;//低压户数、台区数
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private StringBuffer report = new StringBuffer();//停电报备信息的长字符串
-    private final String filepath = "/storage/emulated/0/Download/线路开关台区统计表.xls";//台区数据文件路径
+    private String filepath;//台区数据文件路径
     int time = 0;//停电时间
+    private File excelFile;
 
 
     //读写权限
@@ -93,23 +97,62 @@ public class MainActivity extends AppCompatActivity {
         Button report_button = findViewById(R.id.report_bt);/*信息生成按键，点击后生成停电信息到粘贴板*/
         Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
-        Button loadButton = findViewById(R.id.load_bt);/*载入台区数据表格*/
         TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);//显示当前被选择的开关
         TextView choosedNum = findViewById(R.id.choosed_num);//显示当前被选择的台区数
         TextView choosedSum = findViewById(R.id.choosed_sum);//显示当前被选择的低压户数
+        RadioGroup radgroup = (RadioGroup) findViewById(R.id.radioGroup);
 
-        //读取台区数据表格，获取表格中的线路
-        File excelFile = new File(filepath);
-        if(excelFile.exists()){
-            System.out.println("找到文件");
-            lines = PoiUtil.getLinesFromExcel(excelFile);
+        /*获取TaiQuActivity传送的台区信息*/
+        Intent intent = getIntent();
+        Bundle bundle = intent.getExtras();
+
+        //判断是否从台区选择界面跳转过来的
+        if (bundle != null){
+            if (bundle.getString("line",line) != null){
+                choosedLineSwitch.setText("故障线路及开关：");
+                choosedNum.setText("停电台区数：");
+                choosedSum.setText("影响低压户数：");
+                choosedLineSwitch.append(bundle.getString("line",line)+"，");
+                choosedLineSwitch.append(bundle.getString("switchOfLine",switchOfLine)+"");
+                choosedNum.append(bundle.getInt("num",0)+"");
+                choosedSum.append(bundle.getInt("sum",0)+"");
+
+                excelFile = findFileByTeam(bundle.getString("team",team));
+                switchs = PoiUtil.getSwitchsFormExcel(excelFile,bundle.getString("line",line));
+
+                System.out.println("返回的台区信息："+bundle.getString("line",line));
+                System.out.println("返回的台区信息："+bundle.getString("switchOfLine",switchOfLine));
+                System.out.println("返回的台区信息："+excelFile.toString());
+            }
         }
 
-        //设置线路菜单数组适配器
-        ArrayAdapter<String> adapterOfLine = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,lines);
-        adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        //为线路菜单设置适配器
-        spinnerOfLine.setAdapter(adapterOfLine);
+        radgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                RadioButton radioButton = (RadioButton) findViewById(i);
+                if (radioButton.getText().toString().equals("营配一班")){
+                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";
+                    team = "no.1";
+                }
+                if (radioButton.getText().toString().equals("营配二班")){
+                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配二班）.xls";
+                    team = "no.2";
+                }
+                if (radioButton.getText().toString().equals("营配四班")){
+                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配四班）.xls";
+                    team = "no.4";
+                }
+                excelFile = findFile();//每当点击按钮改变，就重新读取台区文件
+                initAdapter(spinnerOfLine);
+            }
+        });
+
+        RadioButton radioButton = (RadioButton) findViewById(radgroup.getCheckedRadioButtonId());
+        filepath = findFileByTeam(radioButton.getText().toString()).toString();
+
+        //读取台区数据表格，获取表格中的线路
+        excelFile = findFile();
+        initAdapter(spinnerOfLine);
 
         /*线路菜单点击监听器，根据所选线路确定开关*/
         spinnerOfLine.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -153,43 +196,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, TaiQuActivity.class);
                 //向台区选择界面传递被选线路与开关
+                intent.putExtra("team",team);
                 intent.putExtra("line",spinnerOfLine.getSelectedItem().toString());
                 intent.putExtra("switch",spinnerOfswtich.getSelectedItem().toString());
                 startActivity(intent);
             }
         });
 
-        /*获取TaiQuActivity传送的台区信息*/
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-        //判断是否从台区选择界面跳转过来的
-        if (bundle != null){
-            choosedLineSwitch.setText("故障线路及开关：");
-            choosedNum.setText("停电台区数：");
-            choosedSum.setText("影响低压户数：");
-            choosedLineSwitch.append(bundle.getString("line",line)+"，");
-            choosedLineSwitch.append(bundle.getString("switchOfLine",switchOfLine));
-            choosedNum.append(bundle.getInt("num",0)+"");
-            choosedSum.append(bundle.getInt("sum",0)+"");
-            spinnerOfLine.setSelection(printArray(lines,bundle.getString("line",line)));
-            switchs = PoiUtil.getSwitchsFormExcel(excelFile,bundle.getString("line",line));
-            spinnerOfswtich.setSelection(printArray(switchs,bundle.getString("switchOfLine",switchOfLine)));
-        }
-
-        //数据载入按键监听器
-        loadButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                File file = new File(filepath);
-                if (file.exists()){
-                    System.out.println("找到文件");
-                    File excelFile = new File(filepath);
-                    lines = PoiUtil.getLinesFromExcel(excelFile);
-                }else{
-                    System.out.println("没有找到文件");
-                }
-            }
-        });
 
         //信息生成按键监听器
         report_button.setOnClickListener(new View.OnClickListener(){
@@ -264,8 +277,6 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-
-
     }
 
     public int printArray(String [] array,String value){
@@ -275,5 +286,41 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         return 0;
+    }
+
+    private File findFile(){
+        File excelFile = new File(filepath);
+        if(excelFile.exists()){
+            System.out.println("找到文件"+excelFile.toString());
+            lines = PoiUtil.getLinesFromExcel(excelFile);
+        }else {
+            System.out.println("未到文件");
+        }
+        return  excelFile;
+    }
+
+    private File findFileByTeam(String team){
+        if (team.equals("no.1")||team.equals("营配一班")){
+            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";
+            team = "no.1";
+        }
+        if (team.equals("no.2")||team.equals("营配二班")){
+            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配二班）.xls";
+            team = "no.2";
+        }
+        if (team.equals("no.4")||team.equals("营配四班")){
+            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配四班）.xls";
+            team = "no.4";
+        }
+        File excelFile = new File(filepath);
+        return  excelFile;
+    }
+
+    private void initAdapter(Spinner spinnerOfLine){
+        //设置线路菜单数组适配器
+        ArrayAdapter<String> adapterOfLine = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_spinner_item,lines);
+        adapterOfLine.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        //为线路菜单设置适配器
+        spinnerOfLine.setAdapter(adapterOfLine);
     }
 }
