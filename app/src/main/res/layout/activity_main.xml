@@ -32,21 +32,21 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="营配一班"
-                android:layout_marginHorizontal="15dp"
+                android:layout_marginHorizontal="5dp"
                 android:checked="true"/>
 
             <RadioButton
                 android:id="@+id/No.2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
+                android:layout_marginHorizontal="5dp"
                 android:text="营配二班"/>
 
             <RadioButton
                 android:id="@+id/No.4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="15dp"
+                android:layout_marginHorizontal="5dp"
                 android:text="营配四班"/>
         </RadioGroup>
 
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/choose_line"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textColor="@color/black"/>
             <Spinner
                 android:layout_width="match_parent"
@@ -80,7 +80,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/choose_switch"
-                android:textSize="25sp"
+                android:textSize="20sp"
                 android:textColor="@color/black"/>
             <Spinner
                 android:layout_width="match_parent"
@@ -102,7 +102,7 @@
                 android:layout_height="wrap_content"
                 android:text="@string/choose_taiQu"
                 android:textColor="@color/black"
-                android:textSize="25sp" />
+                android:textSize="20sp" />
 
             <Button
                 android:layout_width="match_parent"
@@ -112,7 +112,7 @@
                 android:layout_marginStart="10dp"
                 android:text="点击选择台区"
                 android:id="@+id/taiqu"
-                android:textSize="15sp" />
+                android:textSize="10sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -125,7 +125,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/input_time"
-                android:textSize="22sp"
+                android:textSize="20sp"
                 android:textColor="@color/black"/>
 
             <EditText
@@ -133,6 +133,7 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/time_cut"
                 android:hint="(单位：小时)"
+                android:textSize="10sp"
                 android:textColorHint="#95A1AA"
                 android:inputType="number"/>
         </LinearLayout>
@@ -151,7 +152,7 @@
                 android:layout_marginVertical="5dp"
                 android:text="故障线路及开关："
                 android:textColor="@color/red"
-                android:textSize="20sp" />
+                android:textSize="16sp" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -159,7 +160,7 @@
                 android:layout_marginVertical="5dp"
                 android:text="停电台区数："
                 android:id="@+id/choosed_num"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textColor="@color/red"/>
 
             <TextView
@@ -168,7 +169,7 @@
                 android:layout_marginVertical="5dp"
                 android:text="影响低压户数："
                 android:id="@+id/choosed_sum"
-                android:textSize="20sp"
+                android:textSize="16sp"
                 android:textColor="@color/red"/>
         </LinearLayout>
 
