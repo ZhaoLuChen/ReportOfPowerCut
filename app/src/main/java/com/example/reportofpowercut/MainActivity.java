@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -32,7 +33,10 @@ import androidx.core.app.ActivityCompat;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Workbook;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -108,6 +112,9 @@ public class MainActivity extends AppCompatActivity {
         RadioGroup classRadgroup = (RadioGroup) findViewById(R.id.radioGroup);
         RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);
 
+        //initExcel(MainActivity.this);
+        copyAssetsToDst(MainActivity.this, "excel/yinwang", "/storage/emulated/0/Download/yinwang/");
+
         /*获取TaiQuActivity传送的台区信息*/
         Intent intent = getIntent();
         Bundle bundle = intent.getExtras();
@@ -132,24 +139,13 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
+
         countyRadgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 RadioButton radioButton = (RadioButton) findViewById(checkedId);
 
                 if (radioButton.getText().toString().equals("印王")){
-                    System.out.println("选中印王");
-                    try {
-                        String[] strings = getResources().getAssets().list("excel/");
-                        InputStream is = getResources().getAssets().open("excel/"+strings[0]);
-                        //System.out.println(is.read());
-                        Workbook workbook = new HSSFWorkbook(is);
-                        System.out.println("读取"+workbook.getSheetAt(0).toString());
-                        System.out.println(strings[0]);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    System.out.println("找到"+getResources().getAssets());
 
                 }
                 if (radioButton.getText().toString().equals("宜君")){
@@ -313,6 +309,40 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void copyAssetsToDst(Context context, String srcPath, String dstPath) {
+        try {
+            String fileNames[] = context.getAssets().list(srcPath);
+            if (fileNames.length > 0) {
+                File file = new File(dstPath);
+                if (!file.exists()) file.mkdirs();
+                for (String fileName : fileNames) {
+                    if (!srcPath.equals("")) { // assets 文件夹下的目录
+                        copyAssetsToDst(context, srcPath + File.separator + fileName, dstPath + File.separator + fileName);
+                    } else { // assets 文件夹
+                        copyAssetsToDst(context, fileName, dstPath + File.separator + fileName);
+                    }
+                }
+            } else {
+                File outFile = new File(dstPath);
+                InputStream is = context.getAssets().open(srcPath);
+                FileOutputStream fos = new FileOutputStream(outFile);
+                byte[] buffer = new byte[1024];
+                int byteCount;
+                while ((byteCount = is.read(buffer)) != -1) {
+                    fos.write(buffer, 0, byteCount);
+                }
+                fos.flush();
+                is.close();
+                fos.close();
+            }
+            //isSuccess = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            //errorStr = e.getMessage();
+            //isSuccess = false;
+        }
     }
 
 
