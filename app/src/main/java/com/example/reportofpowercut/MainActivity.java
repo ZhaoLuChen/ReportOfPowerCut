@@ -29,7 +29,12 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Workbook;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
@@ -100,7 +105,8 @@ public class MainActivity extends AppCompatActivity {
         TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);//显示当前被选择的开关
         TextView choosedNum = findViewById(R.id.choosed_num);//显示当前被选择的台区数
         TextView choosedSum = findViewById(R.id.choosed_sum);//显示当前被选择的低压户数
-        RadioGroup radgroup = (RadioGroup) findViewById(R.id.radioGroup);
+        RadioGroup classRadgroup = (RadioGroup) findViewById(R.id.radioGroup);
+        RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);
 
         /*获取TaiQuActivity传送的台区信息*/
         Intent intent = getIntent();
@@ -126,7 +132,39 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        radgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+        countyRadgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                RadioButton radioButton = (RadioButton) findViewById(checkedId);
+
+                if (radioButton.getText().toString().equals("印王")){
+                    System.out.println("选中印王");
+                    try {
+                        String[] strings = getResources().getAssets().list("excel/");
+                        InputStream is = getResources().getAssets().open("excel/"+strings[0]);
+                        //System.out.println(is.read());
+                        Workbook workbook = new HSSFWorkbook(is);
+                        System.out.println("读取"+workbook.getSheetAt(0).toString());
+                        System.out.println(strings[0]);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    System.out.println("找到"+getResources().getAssets());
+
+                }
+                if (radioButton.getText().toString().equals("宜君")){
+
+                }
+                if (radioButton.getText().toString().equals("耀县")){
+
+                }
+                if (radioButton.getText().toString().equals("新区")){
+
+                }
+            }
+        });
+
+        classRadgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton radioButton = (RadioButton) findViewById(i);
@@ -147,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RadioButton radioButton = (RadioButton) findViewById(radgroup.getCheckedRadioButtonId());
+        RadioButton radioButton = (RadioButton) findViewById(classRadgroup.getCheckedRadioButtonId());
         filepath = findFileByTeam(radioButton.getText().toString()).toString();
 
         //读取台区数据表格，获取表格中的线路
@@ -273,11 +311,10 @@ public class MainActivity extends AppCompatActivity {
 
                     alert.show();
                 }
-
-
             }
         });
     }
+
 
     public int printArray(String [] array,String value){
         for(int i = 0;i<array.length;i++){
