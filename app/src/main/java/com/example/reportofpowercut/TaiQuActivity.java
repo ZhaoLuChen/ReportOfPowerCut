@@ -25,7 +25,7 @@ import tool.TaiQuModel;
 import tool.TaiQuadapter;
 
 public class TaiQuActivity extends AppCompatActivity {
-    public String team,line,switchOfLine;
+    public String filepath_county, filepath_classes,line,switchOfLine;
     public ListView taiQuList;//台区列表
     public String[] newTaiQuArray;//台区数组
     public int sum;//低压户数总和
@@ -35,7 +35,7 @@ public class TaiQuActivity extends AppCompatActivity {
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private  StringBuffer cancel = new StringBuffer();
-    private String filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";//台区数据路径
+    private String filepath = "/storage/emulated/0/Download/yinwang/线路开关台区统计表（营配一班）.xls";//台区数据路径
     File excelFile = new File(filepath);
     ArrayList<Integer> cancal_position = new ArrayList<Integer>();
 
@@ -68,21 +68,13 @@ public class TaiQuActivity extends AppCompatActivity {
 
         /*获取MainActivity传送来的线路与开关*/
         Intent intent = getIntent();
-        team = intent.getStringExtra("team");
+        filepath_county = intent.getStringExtra("filepath_county");
+        filepath_classes = intent.getStringExtra("filepath_class");
         line = intent.getStringExtra("line");
         switchOfLine = intent.getStringExtra("switch");
-        System.out.println(team);
 
-        /*根据班组读取相应台区文件*/
-        if(team.equals("no.1")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";
-        }
-        if(team.equals("no.2")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配二班）.xls";
-        }
-        if(team.equals("no.4")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配四班）.xls";
-        }
+        filepath = filepath_county + filepath_classes;
+        System.out.println(filepath);
         excelFile = new File(filepath);
 
         /*通过TextView显示MainActivity传送来的线路与开关*/
@@ -154,7 +146,7 @@ public class TaiQuActivity extends AppCompatActivity {
                                 newTaiQuArray = updata(newTaiQuArray);//更新被选择的台区数组，将空元素剔除。
                                 Intent intent = new Intent( TaiQuActivity.this,MainActivity.class);
                                 Bundle bundle = new Bundle();
-                                bundle.putString("team",team);
+                                bundle.putString("classes", filepath_classes.substring(10,14));
                                 bundle.putString("line",line);
                                 bundle.putString("switchOfLine",switchOfLine);
                                 bundle.putStringArray("taiquArray",newTaiQuArray);

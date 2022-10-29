@@ -20,7 +20,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:label="请按步骤依次选择各项信息"
+            android:label="停电报备自动生成APP"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

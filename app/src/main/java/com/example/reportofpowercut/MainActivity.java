@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -30,14 +29,8 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Workbook;
-
-import java.io.BufferedInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
@@ -48,14 +41,14 @@ import tool.TaiQuModel;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String team = "no.1";
-    private String line,switchOfLine;//所选线路及开关
+    private String line,switchOfLine,classes="营配一班",county="印王";//所选线路及开关
     private String[] strs,lines,switchs;//台区数组、线路数组、开关数组
     private int sum,num;//低压户数、台区数
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private StringBuffer report = new StringBuffer();//停电报备信息的长字符串
-    private String filepath;//台区数据文件路径
+    private String filepath_class="线路开关台区统计表（营配一班）.xls";//班组台区数据文件路径
+    private String filepath_county="/storage/emulated/0/Download/yinwang/";//区县台区数据文件路径
     int time = 0;//停电时间
     private File excelFile;
 
@@ -109,11 +102,14 @@ public class MainActivity extends AppCompatActivity {
         TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);//显示当前被选择的开关
         TextView choosedNum = findViewById(R.id.choosed_num);//显示当前被选择的台区数
         TextView choosedSum = findViewById(R.id.choosed_sum);//显示当前被选择的低压户数
-        RadioGroup classRadgroup = (RadioGroup) findViewById(R.id.radioGroup);
-        RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);
+        RadioGroup classRadgroup = (RadioGroup) findViewById(R.id.radioGroup);//班组选择
+        RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);//区县公司选择
 
-        //initExcel(MainActivity.this);
+        //将台区信息统计表拷贝到手机下载文件夹
         copyAssetsToDst(MainActivity.this, "excel/yinwang", "/storage/emulated/0/Download/yinwang/");
+        copyAssetsToDst(MainActivity.this, "excel/xinqu", "/storage/emulated/0/Download/xinqu/");
+        copyAssetsToDst(MainActivity.this, "excel/yaoxian", "/storage/emulated/0/Download/yaoxian/");
+        copyAssetsToDst(MainActivity.this, "excel/yijun", "/storage/emulated/0/Download/yijun/");
 
         /*获取TaiQuActivity传送的台区信息*/
         Intent intent = getIntent();
@@ -130,8 +126,10 @@ public class MainActivity extends AppCompatActivity {
                 choosedNum.append(bundle.getInt("num",0)+"");
                 choosedSum.append(bundle.getInt("sum",0)+"");
 
-                excelFile = findFileByTeam(bundle.getString("team",team));
-                switchs = PoiUtil.getSwitchsFormExcel(excelFile,bundle.getString("line",line));
+                System.out.println("所选线路："+bundle.getString("line",line));
+                System.out.println("所选班组："+bundle.getString("classes",classes));
+                excelFile = findFileByTeam(bundle.getString("classes",classes));
+                switchs = PoiUtil.getSwitchsFormExcel(excelFile,bundle.getString("line"));
 
                 System.out.println("返回的台区信息："+bundle.getString("line",line));
                 System.out.println("返回的台区信息："+bundle.getString("switchOfLine",switchOfLine));
@@ -146,17 +144,19 @@ public class MainActivity extends AppCompatActivity {
                 RadioButton radioButton = (RadioButton) findViewById(checkedId);
 
                 if (radioButton.getText().toString().equals("印王")){
-
+                    filepath_county = "/storage/emulated/0/Download/yinwang/";
                 }
                 if (radioButton.getText().toString().equals("宜君")){
-
+                    filepath_county ="/storage/emulated/0/Download/yijun/";
                 }
                 if (radioButton.getText().toString().equals("耀县")){
-
+                    filepath_county ="/storage/emulated/0/Download/yaoxian/";
                 }
                 if (radioButton.getText().toString().equals("新区")){
-
+                    filepath_county ="/storage/emulated/0/Download/xinqu/";
                 }
+                county = radioButton.getText().toString()+"公司";
+                Toast.makeText(MainActivity.this,"切换到"+county,Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -165,24 +165,23 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton radioButton = (RadioButton) findViewById(i);
                 if (radioButton.getText().toString().equals("营配一班")){
-                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";
-                    team = "no.1";
+                    filepath_class = "线路开关台区统计表（营配一班）.xls";
+                    classes = "营配一班";
                 }
                 if (radioButton.getText().toString().equals("营配二班")){
-                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配二班）.xls";
-                    team = "no.2";
+                    filepath_class = "线路开关台区统计表（营配二班）.xls";
+                    classes = "营配二班";
                 }
                 if (radioButton.getText().toString().equals("营配四班")){
-                    filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配四班）.xls";
-                    team = "no.4";
+                    filepath_class = "线路开关台区统计表（营配四班）.xls";
+                    classes = "营配三班";
                 }
+                classes = radioButton.getText().toString();
+                Toast.makeText(MainActivity.this,county+classes,Toast.LENGTH_SHORT).show();
                 excelFile = findFile();//每当点击按钮改变，就重新读取台区文件
                 initAdapter(spinnerOfLine);
             }
         });
-
-        RadioButton radioButton = (RadioButton) findViewById(classRadgroup.getCheckedRadioButtonId());
-        filepath = findFileByTeam(radioButton.getText().toString()).toString();
 
         //读取台区数据表格，获取表格中的线路
         excelFile = findFile();
@@ -230,7 +229,8 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 Intent intent = new Intent(MainActivity.this, TaiQuActivity.class);
                 //向台区选择界面传递被选线路与开关
-                intent.putExtra("team",team);
+                intent.putExtra("filepath_class",filepath_class);
+                intent.putExtra("filepath_county",filepath_county);
                 intent.putExtra("line",spinnerOfLine.getSelectedItem().toString());
                 intent.putExtra("switch",spinnerOfswtich.getSelectedItem().toString());
                 startActivity(intent);
@@ -276,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                     /*生成停电报备的文字信息*/
-                    report.append("坐席您好，印台王益区供电公司").append(line).append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).append("\n")
+                    report.append("坐席您好，").append(county).append(classes).append(line).append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).append("\n")
                             .append("停电范围共计").append(num).append("个台区，分别是：").append(Arrays.toString(strs)).append("\n").append("影响低压户数：")
                             .append(sum).append("\n").append("停电时户数：").append(num*time).append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
 
@@ -337,11 +337,8 @@ public class MainActivity extends AppCompatActivity {
                 is.close();
                 fos.close();
             }
-            //isSuccess = true;
         } catch (Exception e) {
             e.printStackTrace();
-            //errorStr = e.getMessage();
-            //isSuccess = false;
         }
     }
 
@@ -356,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private File findFile(){
-        File excelFile = new File(filepath);
+        File excelFile = new File(filepath_county+filepath_class);
         if(excelFile.exists()){
             System.out.println("找到文件"+excelFile.toString());
             lines = PoiUtil.getLinesFromExcel(excelFile);
@@ -366,20 +363,17 @@ public class MainActivity extends AppCompatActivity {
         return  excelFile;
     }
 
-    private File findFileByTeam(String team){
-        if (team.equals("no.1")||team.equals("营配一班")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配一班）.xls";
-            team = "no.1";
+    private File findFileByTeam(String classes){
+        if (classes.equals("营配一班")){
+            filepath_class = "线路开关台区统计表（营配一班）.xls";
         }
-        if (team.equals("no.2")||team.equals("营配二班")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配二班）.xls";
-            team = "no.2";
+        if (classes.equals("营配二班")){
+            filepath_class = "线路开关台区统计表（营配二班）.xls";
         }
-        if (team.equals("no.4")||team.equals("营配四班")){
-            filepath = "/storage/emulated/0/Download/线路开关台区统计表（营配四班）.xls";
-            team = "no.4";
+        if (classes.equals("营配四班")){
+            filepath_class = "线路开关台区统计表（营配四班）.xls";
         }
-        File excelFile = new File(filepath);
+        File excelFile = new File(filepath_county+filepath_class);
         return  excelFile;
     }
 

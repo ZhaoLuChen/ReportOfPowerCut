@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">Report Of Power Cut</string>
     <string name="report_of_power_cut">印王停电小灵通</string>
-    <string name="choose_line">一、选择线路：</string>
-    <string name="choose_switch">二、选择开关：</string>
-    <string name="choose_taiQu">三、选择台区：</string>
-    <string name="input_time">四、输入停电时间：</string>
+    <string name="choose_line">选择线路：</string>
+    <string name="choose_switch">选择开关：</string>
+    <string name="choose_taiQu">选择台区：</string>
+    <string name="input_time">输入停电时间：</string>
 </resources>
