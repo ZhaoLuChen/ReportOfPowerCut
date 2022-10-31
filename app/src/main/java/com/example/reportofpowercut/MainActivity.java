@@ -14,15 +14,16 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -32,11 +33,13 @@ import androidx.core.app.ActivityCompat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import tool.PoiUtil;
 import tool.TaiQuModel;
+import tool.TaiQuadapter;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -44,6 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private String line,switchOfLine,classes="营配一班",county="印王";//所选线路及开关
     private String[] strs,lines,switchs;//台区数组、线路数组、开关数组
     private int sum,num;//低压户数、台区数
+    public ListView taiQuList;//台区列表
     private AlertDialog alert = null;
     private AlertDialog.Builder builder = null;
     private StringBuffer report = new StringBuffer();//停电报备信息的长字符串
@@ -51,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
     private String filepath_county="/storage/emulated/0/Download/yinwang/";//区县台区数据文件路径
     int time = 0;//停电时间
     private File excelFile;
+    private View dialogView;
 
 
     //读写权限
@@ -99,9 +104,6 @@ public class MainActivity extends AppCompatActivity {
         Button report_button = findViewById(R.id.report_bt);/*信息生成按键，点击后生成停电信息到粘贴板*/
         Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
-        TextView choosedLineSwitch = findViewById(R.id.choosed_line_switch);//显示当前被选择的开关
-        TextView choosedNum = findViewById(R.id.choosed_num);//显示当前被选择的台区数
-        TextView choosedSum = findViewById(R.id.choosed_sum);//显示当前被选择的低压户数
         RadioGroup classRadgroup = (RadioGroup) findViewById(R.id.radioGroup);//班组选择
         RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);//区县公司选择
 
@@ -111,32 +113,11 @@ public class MainActivity extends AppCompatActivity {
         copyAssetsToDst(MainActivity.this, "excel/yaoxian", "/storage/emulated/0/Download/yaoxian/");
         copyAssetsToDst(MainActivity.this, "excel/yijun", "/storage/emulated/0/Download/yijun/");
 
-        /*获取TaiQuActivity传送的台区信息*/
-        Intent intent = getIntent();
-        Bundle bundle = intent.getExtras();
-
-        //判断是否从台区选择界面跳转过来的
-        if (bundle != null){
-            if (bundle.getString("line",line) != null){
-                choosedLineSwitch.setText("故障线路及开关：");
-                choosedNum.setText("停电台区数：");
-                choosedSum.setText("影响低压户数：");
-                choosedLineSwitch.append(bundle.getString("line",line)+"，");
-                choosedLineSwitch.append(bundle.getString("switchOfLine",switchOfLine)+"");
-                choosedNum.append(bundle.getInt("num",0)+"");
-                choosedSum.append(bundle.getInt("sum",0)+"");
-
-                System.out.println("所选线路："+bundle.getString("line",line));
-                System.out.println("所选班组："+bundle.getString("classes",classes));
-                excelFile = findFileByTeam(bundle.getString("classes",classes));
-                switchs = PoiUtil.getSwitchsFormExcel(excelFile,bundle.getString("line"));
-
-                System.out.println("返回的台区信息："+bundle.getString("line",line));
-                System.out.println("返回的台区信息："+bundle.getString("switchOfLine",switchOfLine));
-                System.out.println("返回的台区信息："+excelFile.toString());
-            }
-        }
-
+        final LayoutInflater inflater = MainActivity.this.getLayoutInflater();
+        dialogView = inflater.inflate(R.layout.dialog, null,false);
+        ListView taiquList = (ListView)dialogView.findViewById(R.id.taiqu_list);
+        builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setView(dialogView);
 
         countyRadgroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -165,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
             public void onCheckedChanged(RadioGroup radioGroup, int i) {
                 RadioButton radioButton = (RadioButton) findViewById(i);
                 if (radioButton.getText().toString().equals("营配一班")){
-                    filepath_class = "线路开关台区统计表（营配一班）.xls";
+                    filepath_class = "线路开关台区统计表（供电服务班）.xls";
                     classes = "营配一班";
                 }
                 if (radioButton.getText().toString().equals("营配二班")){
@@ -227,13 +208,32 @@ public class MainActivity extends AppCompatActivity {
         taiquButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, TaiQuActivity.class);
-                //向台区选择界面传递被选线路与开关
-                intent.putExtra("filepath_class",filepath_class);
-                intent.putExtra("filepath_county",filepath_county);
-                intent.putExtra("line",spinnerOfLine.getSelectedItem().toString());
-                intent.putExtra("switch",spinnerOfswtich.getSelectedItem().toString());
-                startActivity(intent);
+                /*生成对话框，显示要取消的台区*/
+                List<TaiQuModel> taiQuModelList = new ArrayList<>();
+                String[] newTaiQuArray;//台区数组
+                int[] nums;//低压户数数组
+                taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
+                newTaiQuArray = new String[taiQuModelList.size()];
+                nums = new int[taiQuModelList.size()];
+                num = taiQuModelList.size();
+                for (int j = 0;j<taiQuModelList.size();j++){
+                    newTaiQuArray[j] = taiQuModelList.get(j).getTaiqu();
+                    nums[j] = taiQuModelList.get(j).getNum();
+                    System.out.println(newTaiQuArray[j]+"低压户数"+nums[j]);
+                }
+
+                /*生成数组适配器，作为listview和台区数据的桥梁*/
+                TaiQuadapter adapter = new TaiQuadapter(MainActivity.this, R.layout.taiqu_item, taiQuModelList);
+                taiquList.setAdapter(adapter);
+                alert = builder.setTitle("以下台区将收到故障影响：")
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+
+                            }
+                        })
+                        .create();
+                alert.show();
             }
         });
 
@@ -250,30 +250,17 @@ public class MainActivity extends AppCompatActivity {
                         time = Integer.parseInt(timeText.getText().toString());//获取停电时间
                     }
 
-                    /*获取TaiQuActivity传送的台区信息*/
-                    Intent intent = getIntent();
-                    Bundle bundle = intent.getExtras();
-                    //判断是否从台区选择界面跳转过来的
-                    if (bundle == null /*|| !spinnerOfswtich.getSelectedItem().toString().equals(switchOfLine)*/){
-                        List<TaiQuModel> taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
-                        strs = new String[taiQuModelList.size()];
-                        int[] nums = new int[taiQuModelList.size()];
-                        for (int i = 0;i<taiQuModelList.size();i++){
-                            strs[i] = taiQuModelList.get(i).getTaiqu();
-                            nums[i] = taiQuModelList.get(i).getNum();
-                        }
-                        num = taiQuModelList.size();
-                        sum = Arrays.stream(nums).sum();/*对低压户数求和*/
-                        line = spinnerOfLine.getSelectedItem().toString();
-                        switchOfLine = spinnerOfswtich.getSelectedItem().toString();
-                    }else{
-                        strs = bundle.getStringArray("taiquArray");/*获得台区数组*/
-                        sum = bundle.getInt("sum",0);//获取低压户数
-                        num = bundle.getInt("num",0);//获取台区数量
-                        line = bundle.getString("line",line);//获取线路
-                        switchOfLine = bundle.getString("switchOfLine",switchOfLine);//获取开关
+                    List<TaiQuModel> taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
+                    strs = new String[taiQuModelList.size()];
+                    int[] nums = new int[taiQuModelList.size()];
+                    for (int i = 0;i<taiQuModelList.size();i++){
+                        strs[i] = taiQuModelList.get(i).getTaiqu();
+                        nums[i] = taiQuModelList.get(i).getNum();
                     }
-
+                    num = taiQuModelList.size();
+                    sum = Arrays.stream(nums).sum();/*对低压户数求和*/
+                    line = spinnerOfLine.getSelectedItem().toString();
+                    switchOfLine = spinnerOfswtich.getSelectedItem().toString();
 
                     /*生成停电报备的文字信息*/
                     report.append("坐席您好，").append(county).append(classes).append(line).append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).append("\n")
@@ -343,15 +330,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public int printArray(String [] array,String value){
-        for(int i = 0;i<array.length;i++){
-            if(array[i].equals(value)){
-                return i;
-            }
-        }
-        return 0;
-    }
-
     private File findFile(){
         File excelFile = new File(filepath_county+filepath_class);
         if(excelFile.exists()){
@@ -360,20 +338,6 @@ public class MainActivity extends AppCompatActivity {
         }else {
             System.out.println("未到文件");
         }
-        return  excelFile;
-    }
-
-    private File findFileByTeam(String classes){
-        if (classes.equals("营配一班")){
-            filepath_class = "线路开关台区统计表（营配一班）.xls";
-        }
-        if (classes.equals("营配二班")){
-            filepath_class = "线路开关台区统计表（营配二班）.xls";
-        }
-        if (classes.equals("营配四班")){
-            filepath_class = "线路开关台区统计表（营配四班）.xls";
-        }
-        File excelFile = new File(filepath_county+filepath_class);
         return  excelFile;
     }
 

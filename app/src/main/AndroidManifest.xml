@@ -16,9 +16,6 @@
 
         android:theme="@style/Theme.ReportOfPowerCut">
         <activity
-            android:name=".TaiQuActivity"
-            android:exported="false" />
-        <activity
             android:name=".MainActivity"
             android:label="停电报备自动生成APP"
             android:exported="true">
