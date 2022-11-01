@@ -18,7 +18,7 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:text="选择区县公司"
+            android:text="一、选择区县公司"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp" />
 
@@ -66,50 +66,29 @@
             android:textColor="@color/black"
             android:textStyle="bold"
             android:textSize="16sp"
-            android:text="选择高压营配班组"
+            android:text="二、选择高压营配班组"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp" />
 
-        <RadioGroup
-            android:id="@+id/radioGroup"
+        <Spinner
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="start"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/No.1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="营配一班"
-                android:layout_marginHorizontal="5dp"
-                android:checked="true"/>
-
-            <RadioButton
-                android:id="@+id/No.2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:text="营配二班"/>
-
-            <RadioButton
-                android:id="@+id/No.4"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="5dp"
-                android:text="营配四班"/>
-        </RadioGroup>
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:background="@drawable/underline"
+            android:id="@+id/classes"/>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:layout_marginHorizontal="10dp"
-            android:layout_marginTop="10dp">
+            android:layout_marginTop="25dp">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/choose_line"
+                android:text="三、选择故障线路"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textColor="@color/black"/>
@@ -130,7 +109,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/choose_switch"
+                android:text="四、选择故障开关"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textColor="@color/black"/>
