@@ -16,7 +16,6 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,16 +34,14 @@ import androidx.core.app.ActivityCompat;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import tool.PoiUtil;
 import tool.TaiQuModel;
-import tool.TaiQuadapter;
+
+import static tool.PoiUtil.getTaiQuFromExcel;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -196,11 +193,41 @@ public class MainActivity extends AppCompatActivity {
                 //获取被选择的开关
                 switchOfLine = spinnerOfswtich.getSelectedItem().toString();
                 //根据被选择的开关和线路获取台区
-                PoiUtil.getTaiQuFromExcel(excelFile,spinnerOfLine.getSelectedItem().toString(),
+                getTaiQuFromExcel(excelFile,spinnerOfLine.getSelectedItem().toString(),
                         spinnerOfswtich.getSelectedItem().toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        taiquButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                List<TaiQuModel> taiqulist = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
+                String[] taiqus = new String[taiqulist.size()];
+                for (int i = 0;i<taiqulist.size();i++){
+                    taiqus[i] = taiqulist.get(i).getTaiqu()+" （低压台区数："+taiqulist.get(i).getNum()+"）";
+                }
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                AlertDialog alertDialog = builder.setItems(taiqus, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                    }
+                }).create();
+                alertDialog.show();
 
             }
         });
@@ -217,7 +244,7 @@ public class MainActivity extends AppCompatActivity {
                         time = Integer.parseInt(timeText.getText().toString());//获取停电时间
                     }
                     report =new StringBuffer("") ;
-                    List<TaiQuModel> taiQuModelList = PoiUtil.getTaiQuFromExcel(excelFile,line,switchOfLine);
+                    List<TaiQuModel> taiQuModelList = getTaiQuFromExcel(excelFile,line,switchOfLine);
                     strs = new String[taiQuModelList.size()];
                     int[] nums = new int[taiQuModelList.size()];
                     for (int i = 0;i<taiQuModelList.size();i++){
@@ -317,16 +344,6 @@ public class MainActivity extends AppCompatActivity {
         spinner.setAdapter(adapterOfLine);
     }
 
-    public List<String> extractMessageByRegular(String msg){
-        List<String> list=new ArrayList<String>();
-        Pattern p = Pattern.compile("(\\((^\\))*\\))");
-        Matcher m = p.matcher(msg);
-        while(m.find()){
-            list.add(m.group().substring(1, m.group().length()-1));
-        }
-        return list;
-    }
-
     private void getWechatApi(){
         try {
             Intent intent = new Intent(Intent.ACTION_MAIN);
@@ -339,6 +356,4 @@ public class MainActivity extends AppCompatActivity {
             // TODO: handle exception
         }
     }
-
-
 }

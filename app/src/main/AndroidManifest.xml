@@ -17,7 +17,7 @@
         android:theme="@style/Theme.ReportOfPowerCut">
         <activity
             android:name=".MainActivity"
-            android:label="停电报备自动生成APP"
+            android:label="@string/report_of_power_cut"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
