@@ -88,7 +88,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="三、选择故障线路"
+                android:text="三、选择停电线路"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textColor="@color/black"/>
@@ -109,7 +109,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="四、选择故障开关"
+                android:text="四、选择停电开关"
                 android:textStyle="bold"
                 android:textSize="16sp"
                 android:textColor="@color/black"/>
@@ -168,29 +168,32 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="生成停电报备信息"
+            android:text="生成故障停电报备信息"
+            android:textSize="25sp" />
+
+        <Button
+            android:id="@+id/recondition_report_bt"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:text="生成检修停电报备信息"
             android:textSize="25sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="软件开发团队：铜川供电公司印王分公司柔性团队"
-            android:textSize="20sp"
-            android:textColor="@color/black"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
+            android:layout_marginHorizontal="10dp"
             android:text="软件使用中若发现任何错误、问题或改进意见，请联系开发人员："
-            android:textSize="20sp"
+            android:textSize="16sp"
             android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="印王公司营配一班 赵芦琛（13891430501）"
-            android:textSize="20sp"
+            android:layout_marginHorizontal="10dp"
+            android:text="印王公司 赵芦琛（13891430501）"
+            android:textSize="18sp"
+            android:textStyle="bold"
             android:textColor="@color/black"/>
     </LinearLayout>
 

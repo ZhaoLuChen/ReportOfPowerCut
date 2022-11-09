@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     int time = 0;//停电时间
     private File excelFile;
     private View dialogView;
+    private Boolean recondition = false;
 
 
     //读写权限
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         Spinner spinnerOfswtich = findViewById(R.id.switch_of_line);/*开关选择开关*/
         Spinner spinnerOfClasses = findViewById(R.id.classes);
         Button report_button = findViewById(R.id.report_bt);/*信息生成按键，点击后生成停电信息到粘贴板*/
+        Button recondition_button = findViewById(R.id.recondition_report_bt);
         Button taiquButton = findViewById(R.id.taiqu);/*台区选择按钮，点击后跳转TaiQuActivity*/
         EditText timeText = findViewById(R.id.time_cut);/*输入停电时间*/
         RadioGroup countyRadgroup = (RadioGroup) findViewById(R.id.county_radioGroup);//区县公司选择
@@ -140,8 +142,6 @@ public class MainActivity extends AppCompatActivity {
                 filepath_class = Objects.requireNonNull(new File(filepath_county).list())[0];
 
                 File file = new File(filepath_county);
-                if (file.exists())
-                System.out.println(Arrays.toString(file.list()));
 
                 initAdapter(spinnerOfClasses,file.list());
             }
@@ -232,8 +232,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //信息生成按键监听器
-        report_button.setOnClickListener(new View.OnClickListener(){
+
+        View.OnClickListener onClickListener = new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 //判断是否输入停电时间
@@ -257,9 +257,23 @@ public class MainActivity extends AppCompatActivity {
                     switchOfLine = spinnerOfswtich.getSelectedItem().toString();
 
                     /*生成停电报备的文字信息*/
-                    report.append("坐席您好，").append(county).append(classes).append(line).append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).append("\n")
-                            .append("停电范围共计").append(num).append("个台区，分别是：").append(Arrays.toString(strs)).append("\n").append("影响低压户数：")
-                            .append(sum).append("\n").append("停电时户数：").append(num*time).append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
+                    if (view.getId() == R.id.report_bt)
+                        report.append("坐席您好，").append(county).append(classes).append(line).
+                                append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).
+                                append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
+                                append(Arrays.toString(strs)).append("\n").
+                                append("预计停电时间：").append(time).append("小时").append("\n").
+                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time).
+                                append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
+
+                    if (view.getId() == R.id.recondition_report_bt)
+                        report.append("坐席您好，").append(county).append(classes).append(line).
+                                append("运行转检修").append("\n").append("停电开关：").append(switchOfLine).
+                                append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
+                                append(Arrays.toString(strs)).append("\n").
+                                append("预计停电时间：").append(time).append("小时").append("\n").
+                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time).
+                                append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
 
                     /*生成一个对话框显示生成停电报备的信息*/
                     builder = new AlertDialog.Builder(MainActivity.this);
@@ -290,8 +304,12 @@ public class MainActivity extends AppCompatActivity {
                     alert.show();
                 }
             }
-        });
+        };//报备按键监听器
+
+        report_button.setOnClickListener(onClickListener);//给故障报备按键设置监听器
+        recondition_button.setOnClickListener(onClickListener);//给检修报备按键设置监听器
     }
+
 
     private void copyAssetsToDst(Context context, String srcPath, String dstPath) {
         try {
