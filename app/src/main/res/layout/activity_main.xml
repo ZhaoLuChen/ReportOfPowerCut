@@ -163,8 +163,6 @@
                 android:inputType="number"/>
         </LinearLayout>
 
-
-
         <Button
             android:id="@+id/report_bt"
             android:layout_width="match_parent"
@@ -172,6 +170,28 @@
             android:layout_margin="10dp"
             android:text="生成停电报备信息"
             android:textSize="25sp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="软件开发团队：铜川供电公司印王分公司柔性团队"
+            android:textSize="20sp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="软件使用中若发现任何错误、问题或改进意见，请联系开发人员："
+            android:textSize="20sp"
+            android:textColor="@color/black"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="印王公司营配一班 赵芦琛（13891430501）"
+            android:textSize="20sp"
+            android:textColor="@color/black"/>
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
