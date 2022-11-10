@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.Settings;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -72,17 +71,6 @@ public class MainActivity extends AppCompatActivity {
         if (permission != PackageManager.PERMISSION_GRANTED) {
             // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(activity, PERMISSIONS_STORAGE, REQUEST_EXTERNAL_STORAGE);
-        }
-    }
-
-    @Override
-    public boolean dispatchKeyEvent(KeyEvent event) {
-        //屏蔽返回键
-        if (event.getKeyCode() == KeyEvent.KEYCODE_BACK ) {
-            //do something.
-            return true;
-        } else {
-            return super.dispatchKeyEvent(event);
         }
     }
 
@@ -278,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
                     /*生成一个对话框显示生成停电报备的信息*/
                     builder = new AlertDialog.Builder(MainActivity.this);
                     alert = builder.setTitle("停电报备信息如下：").setMessage(report)
-                            .setPositiveButton("复制到粘贴板", new DialogInterface.OnClickListener() {
+                            .setPositiveButton("复制到粘贴板并跳转到微信", new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialogInterface, int i) {
                                     ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
