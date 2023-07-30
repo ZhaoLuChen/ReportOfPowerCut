@@ -169,7 +169,7 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:text="生成故障停电报备信息"
-            android:textSize="25sp" />
+            android:textSize="22sp" />
 
         <Button
             android:id="@+id/recondition_report_bt"
@@ -177,7 +177,7 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:text="生成检修停电报备信息"
-            android:textSize="25sp" />
+            android:textSize="22sp" />
 
         <TextView
             android:layout_width="wrap_content"

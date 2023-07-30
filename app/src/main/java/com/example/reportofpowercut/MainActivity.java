@@ -225,72 +225,77 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 //判断是否输入停电时间
-                if (timeText.getText().toString().equals("")){
-                    Toast.makeText(MainActivity.this,"请先输入停电时间",Toast.LENGTH_LONG).show();
-                }else {
-                    if (!TextUtils.isEmpty(timeText.getText())){
-                        time = Integer.parseInt(timeText.getText().toString());//获取停电时间
-                    }
-                    report =new StringBuffer("") ;
-                    List<TaiQuModel> taiQuModelList = getTaiQuFromExcel(excelFile,line,switchOfLine);
-                    strs = new String[taiQuModelList.size()];
-                    int[] nums = new int[taiQuModelList.size()];
-                    for (int i = 0;i<taiQuModelList.size();i++){
-                        strs[i] = taiQuModelList.get(i).getTaiqu();
-                        nums[i] = taiQuModelList.get(i).getNum();
-                    }
-                    num = taiQuModelList.size();
-                    sum = Arrays.stream(nums).sum();/*对低压户数求和*/
-                    line = spinnerOfLine.getSelectedItem().toString();
-                    switchOfLine = spinnerOfswtich.getSelectedItem().toString();
 
-                    /*生成停电报备的文字信息*/
-                    if (view.getId() == R.id.report_bt)
-                        report.append("坐席您好，").append(county).append(classes).append(line).
-                                append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).
-                                append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
-                                append(Arrays.toString(strs)).append("\n").
-                                append("预计停电时间：").append(time).append("小时").append("\n").
-                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time).
-                                append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
-
-                    if (view.getId() == R.id.recondition_report_bt)
-                        report.append("坐席您好，").append(county).append(classes).append(line).
-                                append("运行转检修").append("\n").append("停电开关：").append(switchOfLine).
-                                append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
-                                append(Arrays.toString(strs)).append("\n").
-                                append("预计停电时间：").append(time).append("小时").append("\n").
-                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time).
-                                append("\n").append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
-
-                    /*生成一个对话框显示生成停电报备的信息*/
-                    builder = new AlertDialog.Builder(MainActivity.this);
-                    alert = builder.setTitle("停电报备信息如下：").setMessage(report)
-                            .setPositiveButton("复制到粘贴板并跳转到微信", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-
-                                    /*点击确定按键，将信息复制到粘贴板*/
-                                    ClipData mClipData = ClipData.newPlainText("lable", report);
-                                    cm.setPrimaryClip(mClipData);
-
-                                    getWechatApi();
-                                    /*将report的信息清空*/
-                                    report =new StringBuffer("") ;
-                                }
-                            })
-                            .setNegativeButton("取消", new DialogInterface.OnClickListener() {
-                                @Override
-                                public void onClick(DialogInterface dialogInterface, int i) {
-                                    /*将report的信息清空*/
-                                    report =new StringBuffer("") ;
-                                }
-                            })
-                            .create();
-
-                    alert.show();
+                if (!TextUtils.isEmpty(timeText.getText())){
+                    time = Integer.parseInt(timeText.getText().toString());//获取停电时间
                 }
+                report =new StringBuffer("") ;
+                List<TaiQuModel> taiQuModelList = getTaiQuFromExcel(excelFile,line,switchOfLine);
+                strs = new String[taiQuModelList.size()];
+                int[] nums = new int[taiQuModelList.size()];
+                for (int i = 0;i<taiQuModelList.size();i++){
+                    strs[i] = taiQuModelList.get(i).getTaiqu();
+                    nums[i] = taiQuModelList.get(i).getNum();
+                }
+                num = taiQuModelList.size();
+                sum = Arrays.stream(nums).sum();/*对低压户数求和*/
+                line = spinnerOfLine.getSelectedItem().toString();
+                switchOfLine = spinnerOfswtich.getSelectedItem().toString();
+
+                /*生成停电报备的文字信息*/
+                if (view.getId() == R.id.report_bt){
+                    report.append("坐席您好，").append(county).append(classes).append(line).
+                            append("发生故障。").append("\n").append("跳闸开关：").append(switchOfLine).
+                            append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
+                            append(Arrays.toString(strs)).append("\n");
+                    if (!timeText.getText().toString().equals("")){
+                        report.append("预计停电时间：").append(time).append("小时").append("\n").
+                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time);
+                    }
+                    report.append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
+                }
+
+                if (view.getId() == R.id.recondition_report_bt){
+                    report.append("坐席您好，").append(county).append(classes).append(line).
+                            append("运行转检修").append("\n").append("停电开关：").append(switchOfLine).
+                            append("\n").append("停电范围共计").append(num).append("个台区，分别是：").
+                            append(Arrays.toString(strs)).append("\n");
+                    if (!timeText.getText().toString().equals("")){
+                        report.append("预计停电时间：").append(time).append("小时").append("\n").
+                                append("影响低压户数：").append(sum).append("\n").append("停电时户数：").append(num*time);
+                    }
+                    report.append("在此期间客户可能会致电95598，特此报备。烦请各位坐席给予解释安抚，拦截工单谢谢。");
+                }
+
+
+                /*生成一个对话框显示生成停电报备的信息*/
+                builder = new AlertDialog.Builder(MainActivity.this);
+                alert = builder.setTitle("停电报备信息如下：").setMessage(report)
+                        .setPositiveButton("复制到粘贴板并跳转到微信", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+
+                                /*点击确定按键，将信息复制到粘贴板*/
+                                ClipData mClipData = ClipData.newPlainText("lable", report);
+                                cm.setPrimaryClip(mClipData);
+
+                                getWechatApi();
+                                /*将report的信息清空*/
+                                report =new StringBuffer("") ;
+                            }
+                        })
+                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                /*将report的信息清空*/
+                                report =new StringBuffer("") ;
+                            }
+                        })
+                        .create();
+
+                  alert.show();
+
             }
         };//报备按键监听器
 
